@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shifa – মানসিক আরোগ্যের ডিজিটাল সঙ্গী</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -18,12 +21,17 @@
     background: linear-gradient(90deg, #007acc, #0099cc);
     color: white;
     text-align: center;
-    padding: 50px 40px;
-    font-size: 26px;
+    padding: 80px 40px; /* Increased padding for larger header */
+    font-size: 40px;
     font-weight: bold;
     letter-spacing: 1px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     position: relative;
+    min-height: 200px; /* Added minimum height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .header-image {
@@ -32,11 +40,61 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('https://picsum.photos/seed/shifa-header/1200/300.jpg');
+    background-image: url('https://picsum.photos/seed/rural-clinic-people/1200/300.jpg');
     background-size: cover;
     background-position: center;
     opacity: 0.2;
     z-index: -1;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 10;
+  }
+
+  .header-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .header-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .notification-icon {
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   section {
@@ -91,23 +149,44 @@
     font-size: 15px;
   }
 
+  /* Redesigned feature buttons for home page */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+  }
+
   .feature-btn {
-    width: 100%;
     background: #f0f8ff;
     color: #007acc;
-    text-align: left;
-    padding: 15px;
-    margin: 8px 0;
     border: 1px solid #cce4f7;
     border-radius: 12px;
+    padding: 20px;
+    text-align: center;
     transition: all 0.3s ease;
     font-weight: 500;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .feature-btn:hover {
     background: #007acc;
     color: white;
     transform: scale(1.02);
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .feature-title {
+    font-size: 16px;
+    font-weight: 600;
   }
 
   .back-btn {
@@ -524,14 +603,808 @@
     color: #666;
     font-size: 14px;
   }
+
+  /* New styles for added features */
+  .hospital-list {
+    margin-top: 20px;
+  }
+
+  .hospital-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .hospital-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #007acc;
+  }
+
+  .hospital-info {
+    flex: 1;
+  }
+
+  .hospital-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .hospital-address {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .hospital-contact {
+    color: #007acc;
+    font-size: 14px;
+  }
+
+  .map-container {
+    height: 400px;
+    margin: 20px 0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .location-tabs {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e7f5ff;
+  }
+
+  .location-tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+  }
+
+  .location-tab.active {
+    color: #007acc;
+    border-bottom: 2px solid #007acc;
+  }
+
+  .emergency-contact {
+    background: #fff9e6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  .emergency-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #ff6b6b;
+  }
+
+  .professional-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .professional-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #e7f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 24px;
+    color: #007acc;
+  }
+
+  .professional-info {
+    flex: 1;
+  }
+
+  .professional-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .professional-specialty {
+    color: #007acc;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .professional-rating {
+    color: #ffa500;
+    font-size: 14px;
+  }
+
+  .calendar-container {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .calendar-day:hover {
+    background: #e7f5ff;
+  }
+
+  .calendar-day.selected {
+    background: #007acc;
+    color: white;
+  }
+
+  .calendar-day-number {
+    font-weight: bold;
+  }
+
+  .calendar-day-mood {
+    font-size: 12px;
+  }
+
+  .sleep-tracker {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+
+  .sleep-quality {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+  }
+
+  .sleep-quality-option {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .sleep-quality-option:hover {
+    transform: scale(1.1);
+  }
+
+  .sleep-quality-emoji {
+    font-size: 30px;
+  }
+
+  .journal-entry {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .journal-date {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007acc;
+  }
+
+  .journal-content {
+    margin-bottom: 10px;
+  }
+
+  .journal-mood {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .medication-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .medication-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #007acc;
+  }
+
+  .medication-info {
+    flex: 1;
+  }
+
+  .medication-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .medication-dosage {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .medication-time {
+    color: #007acc;
+    font-size: 14px;
+  }
+
+  .achievement {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .achievement-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #ffa500;
+  }
+
+  .achievement-info {
+    flex: 1;
+  }
+
+  .achievement-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .achievement-description {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .achievement-progress {
+    height: 5px;
+    background: #e7f5ff;
+    border-radius: 3px;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+
+  .achievement-progress-bar {
+    height: 100%;
+    background: #ffa500;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .stress-tool {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+
+  .stress-tool-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+    color: #007acc;
+  }
+
+  .breathing-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #e7f5ff;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #007acc;
+    transition: all 4s ease-in-out;
+  }
+
+  .breathing-circle.inhale {
+    transform: scale(1.3);
+    background: #cce4f7;
+  }
+
+  .breathing-circle.exhale {
+    transform: scale(0.7);
+    background: #e9f3ff;
+  }
+
+  .self-help-category {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+  }
+
+  .self-help-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #007acc;
+  }
+
+  .self-help-info {
+    flex: 1;
+  }
+
+  .self-help-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .self-help-description {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1001;
+    max-width: 300px;
+  }
+
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .notification-title {
+    font-weight: bold;
+    color: #007acc;
+  }
+
+  .notification-close {
+    cursor: pointer;
+    color: #666;
+  }
+
+  .notification-content {
+    color: #333;
+  }
+
+  .floating-action-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    z-index: 998;
+  }
+
+  .search-bar {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    padding-left: 40px;
+  }
+
+  .search-bar i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .filter-option {
+    background: #e7f5ff;
+    color: #007acc;
+    border: 1px solid #cce4f7;
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-option:hover {
+    background: #007acc;
+    color: white;
+  }
+
+  .filter-option.active {
+    background: #007acc;
+    color: white;
+  }
+
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007acc;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+  }
+
+  .empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #cce4f7;
+  }
+
+  .empty-state h3 {
+    margin-bottom: 10px;
+    color: #007acc;
+  }
+
+  .profile-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e7f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    font-size: 36px;
+    color: #007acc;
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .profile-email {
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .profile-stat {
+    text-align: center;
+  }
+
+  .profile-stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007acc;
+  }
+
+  .profile-stat-label {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .settings-section {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .settings-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007acc;
+  }
+
+  .settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e7f5ff;
+  }
+
+  .settings-option:last-child {
+    border-bottom: none;
+  }
+
+  .settings-label {
+    flex: 1;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .toggle-switch.active {
+    background: #007acc;
+  }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+  }
+
+  .toggle-switch.active::after {
+    transform: translateX(26px);
+  }
+
+  .about-section {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .about-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007acc;
+  }
+
+  .about-content {
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .team-member {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .team-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e7f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 20px;
+    color: #007acc;
+  }
+
+  .team-info {
+    flex: 1;
+  }
+
+  .team-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .team-role {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .faq-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .faq-question {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007acc;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .faq-question i {
+    transition: transform 0.3s;
+  }
+
+  .faq-question.open i {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    color: #333;
+    display: none;
+  }
+
+  .faq-answer.open {
+    display: block;
+  }
+
+  .contact-form {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+
+  .contact-info {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .contact-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .contact-info-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .contact-info-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    color: #007acc;
+  }
+
+  .contact-info-text {
+    flex: 1;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e7f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #007acc;
+    transition: all 0.2s;
+  }
+
+  .social-link:hover {
+    background: #007acc;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-image"></div>
-  Shifa – মানসিক আরোগ্যের ডিজিটাল সঙ্গী
+  <div class="header-content">
+    Shifa – মানসিক আরোগ্যের ডিজিটাল সঙ্গী
+  </div>
+  <div class="header-actions">
+    <button class="header-btn" onclick="openFeature('about')">আমাদের সম্পর্কে</button>
+    <div class="notification-icon" onclick="showNotifications()">
+      <i class="fas fa-bell"></i>
+      <div class="notification-badge">3</div>
+    </div>
+    <button class="header-btn" onclick="showLogin()">লগইন</button>
+    <button class="header-btn" onclick="showSignUp()">সাইন আপ</button>
+  </div>
 </header>
+
+<!-- Notification -->
+<div class="notification" id="notification">
+  <div class="notification-header">
+    <div class="notification-title">নোটিফিকেশন</div>
+    <div class="notification-close" onclick="closeNotification()">✖</div>
+  </div>
+  <div class="notification-content" id="notification-content">
+    আপনার জন্য একটি নতুন নোটিফিকেশন এসেছে।
+  </div>
+</div>
 
 <!-- Home Page -->
 <section id="home" style="display:block; text-align:center;">
@@ -540,8 +1413,28 @@
        style="width:130px; margin-bottom:25px;">
   <h2>স্বাগতম!</h2>
   <p>আপনার মানসিক আরোগ্যের পথে Shifa সঙ্গে আছে 💙</p>
-  <button onclick="showLogin()">Login</button>
-  <button onclick="showSignUp()">Sign Up</button>
+  
+  <!-- Main features shown without login -->
+  <div class="feature-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 40px;">
+    <button class="feature-btn" onclick="showLoginRequired()">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">মনের পরীক্ষা</div>
+    </button>
+    <button class="feature-btn" onclick="showLoginRequired()">
+      <div class="feature-icon">⚕</div>
+      <div class="feature-title">রোগরাডার</div>
+    </button>
+    <button class="feature-btn" onclick="showLoginRequired()">
+      <div class="feature-icon">🕊</div>
+      <div class="feature-title">চুপলাইন</div>
+    </button>
+    <button class="feature-btn" onclick="showLoginRequired()">
+      <div class="feature-icon">☀</div>
+      <div class="feature-title">ঋতুবসুতি</div>
+    </button>
+  </div>
+  
+  <p style="margin-top: 30px; font-size: 14px; color: #666;">সমস্ত বৈশিষ্ট্য অ্যাক্সেস করতে লগইন করুন</p>
 </section>
 
 <!-- Login Page -->
@@ -568,16 +1461,108 @@
 <!-- Features Menu -->
 <section id="menu">
   <h2>✨ SHIFA Features</h2>
-  <button class="feature-btn" onclick="openFeature('dashboard')">📊 ড্যাশবোর্ড</button>
-  <button class="feature-btn" onclick="openFeature('monpulse')">🧠 মনের পরীক্ষা</button>
-  <button class="feature-btn" onclick="openFeature('rogradar')">⚕ রোগরাডার</button>
-  <button class="feature-btn" onclick="openFeature('chupline')">🕊 চুপলাইন</button>
-  <button class="feature-btn" onclick="openFeature('rituboost')">☀ ঋতুবসুতি</button>
-  <button class="feature-btn" onclick="openFeature('mababybuddy')">👩‍👧 মা ও শিশুর ট্র্যাকার</button>
-  <button class="feature-btn" onclick="openFeature('voicecare')">🎙 কন্ঠ সেবা</button>
-  <button class="feature-btn" onclick="openFeature('forum')">💬 আলোচনা ফোরাম</button>
-  <button class="feature-btn" onclick="openFeature('reminder')">⏰ ডেইলি রিমাইন্ডার</button>
-  <button class="feature-btn" onclick="openChatbot()">🤖 শিফা এসিস্ট্যান্ট</button>
+  <div class="feature-grid">
+    <button class="feature-btn" onclick="openFeature('dashboard')">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">ড্যাশবোর্ড</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('monpulse')">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">মনের পরীক্ষা</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('rogradar')">
+      <div class="feature-icon">⚕</div>
+      <div class="feature-title">রোগরাডার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('chupline')">
+      <div class="feature-icon">🕊</div>
+      <div class="feature-title">চুপলাইন</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('rituboost')">
+      <div class="feature-icon">☀</div>
+      <div class="feature-title">ঋতুবসুতি</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('mababybuddy')">
+      <div class="feature-icon">👩‍👧</div>
+      <div class="feature-title">মা ও শিশুর ট্র্যাকার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('voicecare')">
+      <div class="feature-icon">🎙</div>
+      <div class="feature-title">কন্ঠ সেবা</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('forum')">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">আলোচনা মঞ্চ</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('reminder')">
+      <div class="feature-icon">⏰</div>
+      <div class="feature-title">ডেইলি রিমাইন্ডার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('hospitals')">
+      <div class="feature-icon">🏥</div>
+      <div class="feature-title">হাসপাতাল তালিকা</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('emergency')">
+      <div class="feature-icon">🚨</div>
+      <div class="feature-title">জরুরি যোগাযোগ</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('professionals')">
+      <div class="feature-icon">👨‍⚕️</div>
+      <div class="feature-title">পেশাজীবী তালিকা</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('selfhelp')">
+      <div class="feature-icon">📚</div>
+      <div class="feature-title">স্বয়ং-সাহায্য</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('moodcalendar')">
+      <div class="feature-icon">📅</div>
+      <div class="feature-title">মেজাজ ক্যালেন্ডার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('sleeptracker')">
+      <div class="feature-icon">😴</div>
+      <div class="feature-title">ঘুম ট্র্যাকার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('journal')">
+      <div class="feature-icon">📔</div>
+      <div class="feature-title">জার্নাল</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('medication')">
+      <div class="feature-icon">💊</div>
+      <div class="feature-title">ঔষধ রিমাইন্ডার</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('stressmanagement')">
+      <div class="feature-icon">🧘</div>
+      <div class="feature-title">স্ট্রেস ম্যানেজমেন্ট</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('achievements')">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-title">অর্জন</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('profile')">
+      <div class="feature-icon">👤</div>
+      <div class="feature-title">প্রোফাইল</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('settings')">
+      <div class="feature-icon">⚙️</div>
+      <div class="feature-title">সেটিংস</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('about')">
+      <div class="feature-icon">ℹ️</div>
+      <div class="feature-title">আমাদের সম্পর্কে</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('contact')">
+      <div class="feature-icon">📞</div>
+      <div class="feature-title">যোগাযোগ</div>
+    </button>
+    <button class="feature-btn" onclick="openFeature('faq')">
+      <div class="feature-icon">❓</div>
+      <div class="feature-title">সাধারণ প্রশ্ন</div>
+    </button>
+    <button class="feature-btn" onclick="openChatbot()">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">শিফা এসিস্ট্যান্ট</div>
+    </button>
+  </div>
 </section>
 
 <!-- Dashboard Section with Sub-features -->
@@ -677,24 +1662,7 @@
           </div>
           <div id="daily-logs" style="margin-top: 20px;">
             <h4>পূর্ববর্তী লগসমূহ</h4>
-            <div class="forum-post">
-              <div class="forum-post-header">
-                <span>১৫ মে, ২০২৩</span>
-                <span>মেজাজ: 😊</span>
-              </div>
-              <div class="forum-post-content">
-                আজ সকালে হাঁটা শেষে ভালো লাগছে। কাজে মনোযোগ বেশি ছিল।
-              </div>
-            </div>
-            <div class="forum-post">
-              <div class="forum-post-header">
-                <span>১৪ মে, ২০২৩</span>
-                <span>মেজাজ: 😐</span>
-              </div>
-              <div class="forum-post-content">
-                আজ কিছুটা চাপ অনুভব করছি। কাজের চাপ বেশি।
-              </div>
-            </div>
+            <!-- Daily logs will be loaded from local storage -->
           </div>
         </div>
       </div>
@@ -1201,50 +2169,8 @@
     
     <div style="margin-top: 30px;">
       <h3>সাম্প্রতিক পোস্টসমূহ</h3>
-      
-      <div class="forum-post">
-        <div class="forum-post-header">
-          <span>অনন্যা</span>
-          <span>বিষয়: উদ্বেগ</span>
-        </div>
-        <div class="forum-post-content">
-          আমি গত কয়েক মাস ধরে কাজের চাপে খুব উদ্বিগ্ন থাকছি। কেউ কি জানেন কিভাবে এই পরিস্থিতি মোকাবেলা করা যায়?
-        </div>
-        <div class="forum-post-actions">
-          <span>👍 ১২</span>
-          <span>💬 ৫ টি মন্তব্য</span>
-          <span>🕒 ২ ঘন্টা আগে</span>
-        </div>
-      </div>
-      
-      <div class="forum-post">
-        <div class="forum-post-header">
-          <span>রহিম</span>
-          <span>বিষয়: আত্মযত্ন</span>
-        </div>
-        <div class="forum-post-content">
-          আমি সম্প্রতি ধ্যান শুরু করেছি এবং এটি আমার মানসিক স্বাস্থ্যের উন্নতি করছে। আমি প্রতিদিন ১০ মিনিট ধ্যান করি এবং এটি আমাকে খুব শান্ত রাখে।
-        </div>
-        <div class="forum-post-actions">
-          <span>👍 ২৪</span>
-          <span>💬 ৮ টি মন্তব্য</span>
-          <span>🕒 ৫ ঘন্টা আগে</span>
-        </div>
-      </div>
-      
-      <div class="forum-post">
-        <div class="forum-post-header">
-          <span>সুমনা</span>
-          <span>বিষয়: থেরাপি</span>
-        </div>
-        <div class="forum-post-content">
-          আমি গত মাসে একজন থেরাপিস্টের সাথে কথা বলা শুরু করেছি এবং এটি আমার জন্য খুব উপকারী হচ্ছে। যারা থেরাপি নিয়ে চিন্তিত, তাদের বলবো একবার চেষ্টা করে দেখুন।
-        </div>
-        <div class="forum-post-actions">
-          <span>👍 ১৮</span>
-          <span>💬 ৭ টি মন্তব্য</span>
-          <span>🕒 ১ দিন আগে</span>
-        </div>
+      <div id="forum-posts">
+        <!-- Forum posts will be loaded from local storage -->
       </div>
     </div>
   </div>
@@ -1282,50 +2208,926 @@
     
     <div style="margin-top: 30px;">
       <h3>আপনার রিমাইন্ডারসমূহ</h3>
-      
-      <div class="reminder-item">
-        <div class="reminder-icon">💧</div>
-        <div class="reminder-content">
-          <div>পানি পান করুন</div>
-          <div class="reminder-time">প্রতি ২ ঘন্টা অন্তর</div>
-        </div>
-        <button class="reminder-toggle">🔔</button>
+      <div id="reminders-list">
+        <!-- Reminders will be loaded from local storage -->
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Hospital List Section -->
+<section id="hospitals">
+  <h2>🏥 হাসপাতাল তালিকা</h2>
+  <p>আপনার কাছাকাছি মানসিক স্বাস্থ্য সেবা প্রদানকারী হাসপাতাল ও ক্লিনিক খুঁজুন।</p>
+  
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="hospital-search" placeholder="হাসপাতালের নাম বা অবস্থান খুঁজুন...">
+  </div>
+  
+  <div class="filter-options">
+    <div class="filter-option active" onclick="filterHospitals('all', this)">সব</div>
+    <div class="filter-option" onclick="filterHospitals('government', this)">সরকারি</div>
+    <div class="filter-option" onclick="filterHospitals('private', this)">বেসরকারি</div>
+    <div class="filter-option" onclick="filterHospitals('specialized', this)">বিশেষায়িত</div>
+  </div>
+  
+  <div class="location-tabs">
+    <div class="location-tab active" onclick="showLocation('dhaka', this)">ঢাকা</div>
+    <div class="location-tab" onclick="showLocation('cumilla', this)">কুমিল্লা</div>
+    <div class="location-tab" onclick="showLocation('rajshahi', this)">রাজশাহী</div>
+    <div class="location-tab" onclick="showLocation('sylhet', this)">সিলেট</div>
+    <div class="location-tab" onclick="showLocation('barishal', this)">বরিশাল</div>
+  </div>
+  
+  <div class="map-container" id="hospital-map"></div>
+  
+  <div class="hospital-list" id="hospital-list">
+    <!-- Hospital items will be loaded based on selected location -->
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Emergency Contacts Section -->
+<section id="emergency">
+  <h2>🚨 জরুরি যোগাযোগ</h2>
+  <p>মানসিক স্বাস্থ্য সংকটে জরুরি সাহায্যের জন্য যোগাযোগ করুন।</p>
+  
+  <div class="content-area">
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">জাতীয় মানসিক স্বাস্থ্য হটলাইন</div>
+        <div class="hospital-contact">ফোন: ১৬২৬৩</div>
+        <div>২৪ ঘন্টা খোলা</div>
+      </div>
+      <button onclick="callNumber('16263')">কল করুন</button>
+    </div>
+    
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">কাউন্সেলিং সাইকোলজিস্ট হটলাইন</div>
+        <div class="hospital-contact">ফোন: ০৯৬৬৭৭১১৮৮৮</div>
+        <div>সকাল ৯টা - রাত ৯টা</div>
+      </div>
+      <button onclick="callNumber('09667711888')">কল করুন</button>
+    </div>
+    
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">শিশু ও কিশোর মানসিক স্বাস্থ্য হটলাইন</div>
+        <div class="hospital-contact">ফোন: ০৯৬১০৬৭৭৭৭</div>
+        <div>সকাল ৯টা - রাত ৯টা</div>
+      </div>
+      <button onclick="callNumber('0961067777')">কল করুন</button>
+    </div>
+    
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">মহিলা মানসিক স্বাস্থ্য সাহায্য লাইন</div>
+        <div class="hospital-contact">ফোন: ০৯৬১২৩৪৫৬৭৮</div>
+        <div>২৪ ঘন্টা খোলা</div>
+      </div>
+      <button onclick="callNumber('09612345678')">কল করুন</button>
+    </div>
+    
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">জরুরি স্বাস্থ্য সেবা</div>
+        <div class="hospital-contact">ফোন: ১৬২৬৩</div>
+        <div>২৪ ঘন্টা খোলা</div>
+      </div>
+      <button onclick="callNumber('16263')">কল করুন</button>
+    </div>
+    
+    <div class="emergency-contact">
+      <div class="emergency-icon">📞</div>
+      <div class="hospital-info">
+        <div class="hospital-name">আত্মহত্যা প্রতিরোধ হটলাইন</div>
+        <div class="hospital-contact">ফোন: ০৯৬১০৬৭৭৭</div>
+        <div>২৪ ঘন্টা খোলা</div>
+      </div>
+      <button onclick="callNumber('0961067777')">কল করুন</button>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Professional Directory Section -->
+<section id="professionals">
+  <h2>👨‍⚕️ পেশাজীবী তালিকা</h2>
+  <p>মানসিক স্বাস্থ্য পেশাজীবীদের তালিকা এবং তাদের সাথে যোগাযোগ করুন।</p>
+  
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="professional-search" placeholder="পেশাজীবীর নাম বা বিশেষত্ব খুঁজুন...">
+  </div>
+  
+  <div class="filter-options">
+    <div class="filter-option active" onclick="filterProfessionals('all', this)">সব</div>
+    <div class="filter-option" onclick="filterProfessionals('psychiatrist', this)">মনোরোগ বিশেষজ্ঞ</div>
+    <div class="filter-option" onclick="filterProfessionals('psychologist', this)">সাইকোলজিস্ট</div>
+    <div class="filter-option" onclick="filterProfessionals('counselor', this)">কাউন্সেলর</div>
+  </div>
+  
+  <div id="professionals-list">
+    <div class="professional-card" data-type="psychiatrist">
+      <div class="professional-avatar">👨‍⚕️</div>
+      <div class="professional-info">
+        <div class="professional-name">ড. আব্দুল হামিদ</div>
+        <div class="professional-specialty">মনোরোগ বিশেষজ্ঞ</div>
+        <div class="professional-rating">⭐⭐⭐⭐⭐ (৪.৮)</div>
+        <div>অভিজ্ঞতা: ১৫ বছর</div>
+        <div>চেম্বার: ঢাকা মেডিকেল কলেজ</div>
+      </div>
+      <button onclick="bookAppointment('ড. আব্দুল হামিদ')">অ্যাপয়েন্টমেন্ট বুক করুন</button>
+    </div>
+    
+    <div class="professional-card" data-type="psychologist">
+      <div class="professional-avatar">👩‍⚕️</div>
+      <div class="professional-info">
+        <div class="professional-name">ড. ফারজানা আক্তার</div>
+        <div class="professional-specialty">সাইকোলজিস্ট</div>
+        <div class="professional-rating">⭐⭐⭐⭐⭐ (৪.৯)</div>
+        <div>অভিজ্ঞতা: ১০ বছর</div>
+        <div>চেম্বার: বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়</div>
+      </div>
+      <button onclick="bookAppointment('ড. ফারজানা আক্তার')">অ্যাপয়েন্টমেন্ট বুক করুন</button>
+    </div>
+    
+    <div class="professional-card" data-type="counselor">
+      <div class="professional-avatar">👨‍⚕️</div>
+      <div class="professional-info">
+        <div class="professional-name">ড. রহিম উদ্দিন</div>
+        <div class="professional-specialty">কাউন্সেলর</div>
+        <div class="professional-rating">⭐⭐⭐⭐ (৪.৫)</div>
+        <div>অভিজ্ঞতা: ৮ বছর</div>
+        <div>চেম্বার: জাতীয় মানসিক স্বাস্থ্য ইনস্টিটিউট</div>
+      </div>
+      <button onclick="bookAppointment('ড. রহিম উদ্দিন')">অ্যাপয়েন্টমেন্ট বুক করুন</button>
+    </div>
+    
+    <div class="professional-card" data-type="psychiatrist">
+      <div class="professional-avatar">👩‍⚕️</div>
+      <div class="professional-info">
+        <div class="professional-name">ড. সামিনা ইয়াসমিন</div>
+        <div class="professional-specialty">মনোরোগ বিশেষজ্ঞ</div>
+        <div class="professional-rating">⭐⭐⭐⭐⭐ (৪.৭)</div>
+        <div>অভিজ্ঞতা: ১২ বছর</div>
+        <div>চেম্বার: স্কয়ার হাসপাতাল</div>
+      </div>
+      <button onclick="bookAppointment('ড. সামিনা ইয়াসমিন')">অ্যাপয়েন্টমেন্ট বুক করুন</button>
+    </div>
+    
+    <div class="professional-card" data-type="psychologist">
+      <div class="professional-avatar">👨‍⚕️</div>
+      <div class="professional-info">
+        <div class="professional-name">ড. কামরুল হাসান</div>
+        <div class="professional-specialty">সাইকোলজিস্ট</div>
+        <div class="professional-rating">⭐⭐⭐⭐ (৪.৬)</div>
+        <div>অভিজ্ঞতা: ৯ বছর</div>
+        <div>চেম্বার: ইউনাইটেড হাসপাতাল</div>
+      </div>
+      <button onclick="bookAppointment('ড. কামরুল হাসান')">অ্যাপয়েন্টমেন্ট বুক করুন</button>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Self-Help Resources Section -->
+<section id="selfhelp">
+  <h2>📚 স্বয়ং-সাহায্য</h2>
+  <p>মানসিক স্বাস্থ্য উন্নতির জন্য স্বয়ং-সাহায্য সম্পদ এবং কৌশল।</p>
+  
+  <div class="content-area">
+    <div class="self-help-category">
+      <div class="self-help-icon">🧘</div>
+      <div class="self-help-info">
+        <div class="self-help-title">ধ্যান এবং মাইন্ডফুলনেস</div>
+        <div class="self-help-description">ধ্যান এবং মাইন্ডফুলনেস কৌশল শিখুন যা আপনার মানসিক স্বাস্থ্য উন্নতি করতে সাহায্য করবে।</div>
+      </div>
+      <button onclick="openSelfHelpResource('meditation')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">📖</div>
+      <div class="self-help-info">
+        <div class="self-help-title">থেরাপিউটিক লেখা</div>
+        <div class="self-help-description">জার্নালিং এবং লেখার মাধ্যমে আপনার অনুভূতি প্রকাশ করুন এবং মানসিক চাপ কমান।</div>
+      </div>
+      <button onclick="openSelfHelpResource('writing')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">🎨</div>
+      <div class="self-help-info">
+        <div class="self-help-title">আর্ট থেরাপি</div>
+        <div class="self-help-description">শিল্প ও সৃজনশীলতার মাধ্যমে আপনার মানসিক স্বাস্থ্য উন্নতি করুন।</div>
+      </div>
+      <button onclick="openSelfHelpResource('art')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">🏃</div>
+      <div class="self-help-info">
+        <div class="self-help-title">ব্যায়াম এবং শারীরিক কার্যকলাপ</div>
+        <div class="self-help-description">নিয়মিত ব্যায়াম এবং শারীরিক কার্যকলাপ মানসিক স্বাস্থ্যের জন্য কতটা উপকারী জানুন।</div>
+      </div>
+      <button onclick="openSelfHelpResource('exercise')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">🍎</div>
+      <div class="self-help-info">
+        <div class="self-help-title">পুষ্টিকর খাবার</div>
+        <div class="self-help-description">মানসিক স্বাস্থ্যের জন্য উপকারী খাবার এবং ডায়েট সম্পর্কে জানুন।</div>
+      </div>
+      <button onclick="openSelfHelpResource('nutrition')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">😴</div>
+      <div class="self-help-info">
+        <div class="self-help-title">ঘুমের স্বাস্থ্য</div>
+        <div class="self-help-description">ভালো ঘুমের অভ্যাস গড়ে তুলতে এবং ঘুমের সমস্যা সমাধানে সাহায্য করুন।</div>
+      </div>
+      <button onclick="openSelfHelpResource('sleep')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">🤝</div>
+      <div class="self-help-info">
+        <div class="self-help-title">সামাজিক সম্পর্ক</div>
+        <div class="self-help-description">সামাজিক সম্পর্ক উন্নতি করতে এবং সামাজিক দক্ষতা বাড়াতে সাহায্য করুন।</div>
+      </div>
+      <button onclick="openSelfHelpResource('social')">বিস্তারিত দেখুন</button>
+    </div>
+    
+    <div class="self-help-category">
+      <div class="self-help-icon">🧠</div>
+      <div class="self-help-info">
+        <div class="self-help-title">সমস্যা সমাধান কৌশল</div>
+        <div class="self-help-description">কার্যকরী সমস্যা সমাধান কৌশল শিখুন যা আপনার মানসিক চাপ কমাতে সাহায্য করবে।</div>
+      </div>
+      <button onclick="openSelfHelpResource('problem-solving')">বিস্তারিত দেখুন</button>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Mood Calendar Section -->
+<section id="moodcalendar">
+  <h2>📅 মেজাজ ক্যালেন্ডার</h2>
+  <p>আপনার দৈনিক মেজাজ ট্র্যাক করুন এবং মাসিক মেজাজের প্যাটার্ন দেখুন।</p>
+  
+  <div class="content-area">
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <button onclick="previousMonth()">◀</button>
+        <h3 id="current-month">জুন ২০২৩</h3>
+        <button onclick="nextMonth()">▶</button>
       </div>
       
-      <div class="reminder-item">
-        <div class="reminder-icon">😊</div>
-        <div class="reminder-content">
-          <div>হাসুন</div>
-          <div class="reminder-time">সকাল ৯:০০ টা</div>
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Calendar days will be generated by JavaScript -->
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <h3>মেজাজের প্যাটার্ন</h3>
+      <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+        <div style="text-align: center;">
+          <div style="font-size: 30px;">😄</div>
+          <p>খুব ভালো: ৫ দিন</p>
         </div>
-        <button class="reminder-toggle">🔔</button>
+        <div style="text-align: center;">
+          <div style="font-size: 30px;">😊</div>
+          <p>ভালো: ৮ দিন</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 30px;">😐</div>
+          <p>স্বাভাবিক: ৭ দিন</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 30px;">😔</div>
+          <p>খারাপ: ৩ দিন</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 30px;">😢</div>
+          <p>খুব খারাপ: ২ দিন</p>
+        </div>
       </div>
       
-      <div class="reminder-item">
-        <div class="reminder-icon">💤</div>
-        <div class="reminder-content">
-          <div>বিশ্রাম নিন</div>
-          <div class="reminder-time">দুপুর ১:০০ টা</div>
+      <div style="background: #e7f5ff; padding: 15px; border-radius: 10px; margin-top: 20px;">
+        <h4>এই মাসে আপনার মেজাজের প্রবণতা:</h4>
+        <p>এই মাসে আপনি বেশিরভাগ সময় ভালো অনুভব করেছেন। আপনার মেজাজ সপ্তাহের শুরুতে ভালো থাকে এবং সপ্তাহের শেষে কিছুটা খারাপ হয়। এটি একটি সাধারণ প্যাটার্ন এবং আপনি সপ্তাহের শেষে আরও বিশ্রাম নিতে পারেন।</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Sleep Tracker Section -->
+<section id="sleeptracker">
+  <h2>😴 ঘুম ট্র্যাকার</h2>
+  <p>আপনার ঘুমের মান এবং প্যাটার্ন ট্র্যাক করুন।</p>
+  
+  <div class="content-area">
+    <div class="sleep-tracker">
+      <h3>আজকের ঘুমের মান</h3>
+      <div class="sleep-quality">
+        <div class="sleep-quality-option" onclick="selectSleepQuality(this, 'excellent')">
+          <div class="sleep-quality-emoji">😄</div>
+          <p>অসাধারণ</p>
         </div>
-        <button class="reminder-toggle">🔔</button>
+        <div class="sleep-quality-option" onclick="selectSleepQuality(this, 'good')">
+          <div class="sleep-quality-emoji">😊</div>
+          <p>ভালো</p>
+        </div>
+        <div class="sleep-quality-option" onclick="selectSleepQuality(this, 'average')">
+          <div class="sleep-quality-emoji">😐</div>
+          <p>গড়</p>
+        </div>
+        <div class="sleep-quality-option" onclick="selectSleepQuality(this, 'poor')">
+          <div class="sleep-quality-emoji">😔</div>
+          <p>খারাপ</p>
+        </div>
+        <div class="sleep-quality-option" onclick="selectSleepQuality(this, 'terrible')">
+          <div class="sleep-quality-emoji">😢</div>
+          <p>খুব খারাপ</p>
+        </div>
       </div>
       
-      <div class="reminder-item">
-        <div class="reminder-icon">🧘</div>
-        <div class="reminder-content">
-          <div>ধ্যান করুন</div>
-          <div class="reminder-time">সন্ধ্যা ৬:০০ টা</div>
+      <div id="sleep-details" style="display:none; margin-top:20px;">
+        <h4>ঘুমের বিস্তারিত তথ্য</h4>
+        <div class="form-group">
+          <label>কখন ঘুমাতে গিয়েছিলেন?</label>
+          <input type="time" id="sleep-time">
         </div>
-        <button class="reminder-toggle">🔔</button>
+        <div class="form-group">
+          <label>কখন ঘুম থেকে উঠেছিলেন?</label>
+          <input type="time" id="wake-time">
+        </div>
+        <div class="form-group">
+          <label>কতবার ঘুম ভেঙেছিল?</label>
+          <select id="wake-ups">
+            <option value="0">কোনোটাই না</option>
+            <option value="1">১ বার</option>
+            <option value="2">২ বার</option>
+            <option value="3">৩ বার</option>
+            <option value="4+">৪ বার বা তার বেশি</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ঘুমানোর আগে আপনি কী করেছিলেন?</label>
+          <textarea id="pre-sleep-activities" placeholder="ঘুমানোর আগে আপনার কার্যক্রম লিখুন..."></textarea>
+        </div>
+        <button onclick="saveSleepData()">সংরক্ষণ করুন</button>
       </div>
+    </div>
+    
+    <div style="margin-top: 30px;">
+      <h3>ঘুমের প্যাটার্ন</h3>
+      <div class="chart-container">
+        <div class="chart-bar" style="left: 20px; height: 70%;"></div>
+        <div class="chart-bar" style="left: 80px; height: 60%;"></div>
+        <div class="chart-bar" style="left: 140px; height: 80%;"></div>
+        <div class="chart-bar" style="left: 200px; height: 75%;"></div>
+        <div class="chart-bar" style="left: 260px; height: 85%;"></div>
+        <div class="chart-bar" style="left: 320px; height: 65%;"></div>
+        <div class="chart-bar" style="left: 380px; height: 90%;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #666;">
+        <span>সোম</span>
+        <span>মঙ্গল</span>
+        <span>বুধ</span>
+        <span>বৃহস্পতি</span>
+        <span>শুক্র</span>
+        <span>শনি</span>
+        <span>রবি</span>
+      </div>
+      <p style="margin-top: 20px; text-align: center;">এই সপ্তাহে আপনার গড় ঘুমের সময় ৭.৫ ঘন্টা।</p>
       
-      <div class="reminder-item">
-        <div class="reminder-icon">📖</div>
-        <div class="reminder-content">
-          <div>বই পড়ুন</div>
-          <div class="reminder-time">রাত ৯:০০ টা</div>
+      <div style="background: #e7f5ff; padding: 15px; border-radius: 10px; margin-top: 20px;">
+        <h4>ঘুমের টিপস:</h4>
+        <ul style="text-align: left; padding-left: 20px;">
+          <li>প্রতিদিন একই সময়ে ঘুমাতে যান এবং উঠুন</li>
+          <li>ঘুমানোর আগে ইলেকট্রনিক ডিভাইস ব্যবহার এড়িয়ে চলুন</li>
+          <li>ঘুমানোর আগে ক্যাফেইন গ্রহণ করবেন না</li>
+          <li>আপনার শয়নকক্ষটি শান্ত, অন্ধকার এবং ঠান্ডা রাখুন</li>
+          <li>ঘুমানোর আগে শান্ত করার কার্যকলাপ করুন, যেমন ধ্যান বা হালকা পড়া</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Journal Section -->
+<section id="journal">
+  <h2>📔 জার্নাল</h2>
+  <p>আপনার চিন্তা, অনুভূতি এবং অভিজ্ঞতা লিখুন।</p>
+  
+  <div class="content-area">
+    <div class="tracker-form">
+      <h3>নতুন জার্নাল এন্ট্রি</h3>
+      <div class="form-group">
+        <label>তারিখ</label>
+        <input type="date" id="journal-date" value="">
+      </div>
+      <div class="form-group">
+        <label>শিরোনাম</label>
+        <input type="text" id="journal-title" placeholder="আপনার জার্নাল এন্ট্রির শিরোনাম লিখুন...">
+      </div>
+      <div class="form-group">
+        <label>আপনি কেমন অনুভব করছেন?</label>
+        <select id="journal-mood">
+          <option value="very-happy">খুব ভালো</option>
+          <option value="happy">ভালো</option>
+          <option value="neutral">স্বাভাবিক</option>
+          <option value="sad">খারাপ</option>
+          <option value="very-sad">খুব খারাপ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>আপনার চিন্তা লিখুন</label>
+        <textarea id="journal-content" placeholder="আপনার চিন্তা, অনুভূতি এবং অভিজ্ঞতা লিখুন..." style="min-height: 200px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>ট্যাগ (ঐচ্ছিক)</label>
+        <input type="text" id="journal-tags" placeholder="যেমন: #স্ট্রেস #সুখ #পরিবার">
+      </div>
+      <button onclick="saveJournalEntry()">সংরক্ষণ করুন</button>
+    </div>
+    
+    <div style="margin-top: 30px;">
+      <h3>পূর্ববর্তী জার্নাল এন্ট্রিস</h3>
+      <div id="journal-entries">
+        <!-- Journal entries will be loaded from local storage -->
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Medication Reminder Section -->
+<section id="medication">
+  <h2>💊 ঔষধ রিমাইন্ডার</h2>
+  <p>আপনার ঔষধ নিয়মিত সময়ে খেতে রিমাইন্ডার সেট করুন।</p>
+  
+  <div class="content-area">
+    <div class="tracker-form">
+      <h3>নতুন ঔষধ যোগ করুন</h3>
+      <div class="form-group">
+        <label>ঔষধের নাম</label>
+        <input type="text" id="medication-name" placeholder="ঔষধের নাম লিখুন...">
+      </div>
+      <div class="form-group">
+        <label>ডোজ</label>
+        <input type="text" id="medication-dosage" placeholder="যেমন: ১টি ট্যাবলেট">
+      </div>
+      <div class="form-group">
+        <label>সময়</label>
+        <input type="time" id="medication-time">
+      </div>
+      <div class="form-group">
+        <label>পুনরাবৃত্তি</label>
+        <select id="medication-repeat">
+          <option value="daily">প্রতিদিন</option>
+          <option value="weekly">সাপ্তাহিক</option>
+          <option value="monthly">মাসিক</option>
+          <option value="custom">কাস্টম</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>নোট (ঐচ্ছিক)</label>
+        <textarea id="medication-notes" placeholder="ঔষধ সম্পর্কে কোনো নোট থাকলে লিখুন..."></textarea>
+      </div>
+      <button onclick="addMedication()">ঔষধ যোগ করুন</button>
+    </div>
+    
+    <div style="margin-top: 30px;">
+      <h3>আপনার ঔষধ তালিকা</h3>
+      <div id="medications-list">
+        <!-- Medications will be loaded from local storage -->
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Stress Management Section -->
+<section id="stressmanagement">
+  <h2>🧘 স্ট্রেস ম্যানেজমেন্ট</h2>
+  <p>স্ট্রেস মোকাবেলার জন্য কৌশল এবং সরঞ্জাম।</p>
+  
+  <div class="content-area">
+    <div class="stress-tool">
+      <div class="stress-tool-icon">🫁</div>
+      <h3>শ্বাসক্রিয়া ব্যায়াম</h3>
+      <p>গভীর শ্বাস নিন এবং ধীরে ধীরে ছাড়ুন। এটি আপনাকে শান্ত করতে সাহায্য করবে।</p>
+      <div class="breathing-circle" id="breathing-circle">
+        শ্বাস নিন
+      </div>
+      <button onclick="startBreathingExercise()">শুরু করুন</button>
+    </div>
+    
+    <div class="stress-tool">
+      <div class="stress-tool-icon">🧘</div>
+      <h3>দ্রুত ধ্যান</h3>
+      <p>মাত্র ৫ মিনিটের ধ্যান আপনার মনকে শান্ত করতে পারে।</p>
+      <button onclick="startQuickMeditation()">ধ্যান শুরু করুন</button>
+    </div>
+    
+    <div class="stress-tool">
+      <div class="stress-tool-icon">🎵</div>
+      <h3>শান্তিদায়ক সঙ্গীত</h3>
+      <p>শান্তিদায়ক সঙ্গীত শুনে আপনার মনকে শান্ত করুন।</p>
+      <button onclick="playCalmingMusic()">সঙ্গীত শুনুন</button>
+    </div>
+    
+    <div class="stress-tool">
+      <div class="stress-tool-icon">✍️</div>
+      <h3>গ্রাউন্ডিং টেকনিক</h3>
+      <p>৫-৪-৩-২-১ গ্রাউন্ডিং টেকনিক ব্যবহার করে বর্তমান মুহূর্তে ফিরে আসুন।</p>
+      <button onclick="showGroundingTechnique()">টেকনিক দেখুন</button>
+    </div>
+    
+    <div class="stress-tool">
+      <div class="stress-tool-icon">🚶</div>
+      <h3>দ্রুত হাঁটা</h3>
+      <p>মাত্র ১০ মিনিটের হাঁটা আপনার স্ট্রেস কমাতে সাহায্য করতে পারে।</p>
+      <button onclick="startWalkingExercise()">হাঁটা শুরু করুন</button>
+    </div>
+    
+    <div class="stress-tool">
+      <div class="stress-tool-icon">🤗</div>
+      <h3>প্রোগ্রেসিভ মাসল রিল্যাক্সেশন</h3>
+      <p>পেশীগুলোকে টেনে এবং ছেড়ে দিয়ে শারীরিক টান কমান।</p>
+      <button onclick="showMuscleRelaxation()">কৌশল দেখুন</button>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Achievements Section -->
+<section id="achievements">
+  <h2>🏆 অর্জন</h2>
+  <p>আপনার মানসিক স্বাস্থ্য যাত্রায় আপনার অর্জনগুলো দেখুন।</p>
+  
+  <div class="content-area">
+    <div id="achievements-list">
+      <!-- Achievements will be loaded from local storage -->
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Profile Section -->
+<section id="profile">
+  <h2>👤 প্রোফাইল</h2>
+  <p>আপনার প্রোফাইল তথ্য এবং সেটিংস পরিচালনা করুন।</p>
+  
+  <div class="content-area">
+    <div class="profile-section">
+      <div class="profile-avatar">👤</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name">আপনার নাম</div>
+        <div class="profile-email" id="profile-email">your.email@example.com</div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-days">০</div>
+            <div class="profile-stat-label">দিন</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-journals">০</div>
+            <div class="profile-stat-label">জার্নাল</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-achievements">০</div>
+            <div class="profile-stat-label">অর্জন</div>
+          </div>
         </div>
-        <button class="reminder-toggle">🔔</button>
+      </div>
+      <button onclick="editProfile()">সম্পাদনা করুন</button>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">অ্যাকাউন্ট সেটিংস</div>
+      <div class="settings-option">
+        <div class="settings-label">ইমেল পরিবর্তন করুন</div>
+        <button>পরিবর্তন করুন</button>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">পাসওয়ার্ড পরিবর্তন করুন</div>
+        <button>পরিবর্তন করুন</button>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">দুই-ফ্যাক্টর প্রমাণীকরণ</div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">নোটিফিকেশন সেটিংস</div>
+      <div class="settings-option">
+        <div class="settings-label">দৈনিক রিমাইন্ডার</div>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">ঔষধ রিমাইন্ডার</div>
+        <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">সাপ্তাহিক প্রতিবেদন</div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">গোপনীয়তা সেটিংস</div>
+      <div class="settings-option">
+        <div class="settings-label">প্রোফাইল দেখান</div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">ডেটা শেয়ার করুন</div>
+        <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">অ্যাকাউন্ট ডিলিট করুন</div>
+        <button>ডিলিট করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Settings Section -->
+<section id="settings">
+  <h2>⚙️ সেটিংস</h2>
+  <p>অ্যাপ্লিকেশনের সেটিংস পরিবর্তন করুন।</p>
+  
+  <div class="content-area">
+    <div class="settings-section">
+      <div class="settings-title">সাধারণ সেটিংস</div>
+      <div class="settings-option">
+        <div class="settings-label">ভাষা</div>
+        <select id="language-setting" onchange="saveSettings()">
+          <option value="bn">বাংলা</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">থিম</div>
+        <select id="theme-setting" onchange="saveSettings()">
+          <option value="light">লাইট</option>
+          <option value="dark">ডার্ক</option>
+        </select>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">টাইম জোন</div>
+        <select id="timezone-setting" onchange="saveSettings()">
+          <option value="dhaka">ঢাকা (GMT+6)</option>
+          <option value="kolkata">কলকাতা (GMT+5:30)</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">ডেটা এবং স্টোরেজ</div>
+      <div class="settings-option">
+        <div class="settings-label">ডেটা ব্যাকআপ</div>
+        <button onclick="backupData()">ব্যাকআপ করুন</button>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">ডেটা রিস্টোর</div>
+        <button onclick="restoreData()">রিস্টোর করুন</button>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">ক্যাশ ক্লিয়ার করুন</div>
+        <button onclick="clearCache()">ক্লিয়ার করুন</button>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-title">অ্যাপ্লিকেশন সম্পর্কে</div>
+      <div class="settings-option">
+        <div class="settings-label">ভার্সন</div>
+        <div>১.০.০</div>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">আপডেট চেক করুন</div>
+        <button>চেক করুন</button>
+      </div>
+      <div class="settings-option">
+        <div class="settings-label">শর্তাবলী এবং শর্ত</div>
+        <button>দেখুন</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- About Section -->
+<section id="about">
+  <h2>ℹ️ আমাদের সম্পর্কে</h2>
+  <p>Shifa সম্পর্কে জানুন এবং আমাদের মিশন ও ভিশন সম্পর্কে জানুন।</p>
+  
+  <div class="content-area">
+    <div class="about-section">
+      <div class="about-title">Shifa সম্পর্কে</div>
+      <div class="about-content">
+        <p>Shifa হল একটি ডিজিটাল মানসিক স্বাস্থ্য প্ল্যাটফর্ম যা বাংলাদেশের মানুষের মানসিক স্বাস্থ্যের যত্নে নিয়োজিত। আমাদের লক্ষ্য হল মানসিক স্বাস্থ্য সেবাকে সহজলভ্য এবং সাশ্রয়ী করে তোলা।</p>
+        <p>আমরা বিশ্বাস করি যে মানসিক স্বাস্থ্য শারীরিক স্বাস্থ্যের মতোই গুরুত্বপূর্ণ। আমাদের প্ল্যাটফর্মটি ব্যবহারকারীদের তাদের মানসিক স্বাস্থ্য ট্র্যাক করতে, স্বয়ং-সাহায্য সম্পদ ব্যবহার করতে এবং প্রয়োজনে পেশাজীবী সাহায্য পেতে সাহায্য করে।</p>
+      </div>
+    </div>
+    
+    <div class="about-section">
+      <div class="about-title">আমাদের মিশন</div>
+      <div class="about-content">
+        <p>আমাদের মিশন হল বাংলাদেশে মানসিক স্বাস্থ্য সচেতনতা বৃদ্ধি করা এবং মানসিক স্বাস্থ্য সেবাকে সহজলভ্য করা। আমরা চাই প্রত্যেক ব্যক্তি যেন তাদের মানসিক স্বাস্থ্যের যত্ন নিতে পারে এবং প্রয়োজনে সাহায্য পেতে পারে।</p>
+      </div>
+    </div>
+    
+    <div class="about-section">
+      <div class="about-title">আমাদের ভিশন</div>
+      <div class="about-content">
+        <p>আমাদের ভিশন হল একটি সমাজ যেখানে মানসিক স্বাস্থ্য সম্পর্কে কোনো কলঙ্ক বা বৈষম্য থাকবে না এবং প্রত্যেক ব্যক্তি মানসিক স্বাস্থ্য সেবা পাবে।</p>
+      </div>
+    </div>
+    
+    <div class="about-section">
+      <div class="about-title">আমাদের দল</div>
+      <div class="team-member">
+        <div class="team-avatar">👨‍💼</div>
+        <div class="team-info">
+          <div class="team-name">ড. ইশতিয়াক আলম</div>
+          <div class="team-role">প্রতিষ্ঠাতা ও সিইও</div>
+        </div>
+      </div>
+      <div class="team-member">
+        <div class="team-avatar">👩‍💼</div>
+        <div class="team-info">
+          <div class="team-name">ড. সামিয়া বিনতা আকবর</div>
+          <div class="team-role">প্রধান সাইকোলজিস্ট</div>
+        </div>
+      </div>
+      <div class="team-member">
+        <div class="team-avatar">👨‍💻</div>
+        <div class="team-info">
+          <div class="team-name">নাফিজা নূর</div>
+          <div class="team-role">প্রধান প্রযুক্তি কর্মকর্তা</div>
+        </div>
+      </div>
+      <div class="team-member">
+        <div class="team-avatar">👩‍💼</div>
+        <div class="team-info">
+          <div class="team-name">সামিনা আক্তার</div>
+          <div class="team-role">প্রধান অপারেশন কর্মকর্তা</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- Contact Section -->
+<section id="contact">
+  <h2>📞 যোগাযোগ</h2>
+  <p>আমাদের সাথে যোগাযোগ করুন এবং আপনার প্রশ্ন বা মতামত শেয়ার করুন।</p>
+  
+  <div class="content-area">
+    <div class="contact-info">
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📧</div>
+        <div class="contact-info-text">info@shifa.com</div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📞</div>
+        <div class="contact-info-text">+৮৮০ ১৭১২৩৪৫৬৭৮</div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📍</div>
+        <div class="contact-info-text">ধানমন্ডি, ঢাকা, বাংলাদেশ</div>
+      </div>
+    </div>
+    
+    <div class="contact-form">
+      <h3>আমাদের সাথে যোগাযোগ করুন</h3>
+      <div class="form-group">
+        <label>নাম</label>
+        <input type="text" id="contact-name" placeholder="আপনার নাম লিখুন...">
+      </div>
+      <div class="form-group">
+        <label>ইমেল</label>
+        <input type="email" id="contact-email" placeholder="আপনার ইমেল লিখুন...">
+      </div>
+      <div class="form-group">
+        <label>বিষয়</label>
+        <input type="text" id="contact-subject" placeholder="আপনার বার্তার বিষয় লিখুন...">
+      </div>
+      <div class="form-group">
+        <label>বার্তা</label>
+        <textarea id="contact-message" placeholder="আপনার বার্তা লিখুন..." style="min-height: 150px;"></textarea>
+      </div>
+      <button onclick="sendContactMessage()">বার্তা পাঠান</button>
+    </div>
+    
+    <div class="social-links">
+      <div class="social-link">
+        <i class="fab fa-facebook-f"></i>
+      </div>
+      <div class="social-link">
+        <i class="fab fa-twitter"></i>
+      </div>
+      <div class="social-link">
+        <i class="fab fa-instagram"></i>
+      </div>
+      <div class="social-link">
+        <i class="fab fa-linkedin-in"></i>
+      </div>
+      <div class="social-link">
+        <i class="fab fa-youtube"></i>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="back()">Back</button>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq">
+  <h2>❓ সাধারণ প্রশ্ন</h2>
+  <p>আমাদের সম্পর্কে সাধারণ প্রশ্ন এবং উত্তর।</p>
+  
+  <div class="content-area">
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Shifa কি?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Shifa হল একটি ডিজিটাল মানসিক স্বাস্থ্য প্ল্যাটফর্ম যা বাংলাদেশের মানুষের মানসিক স্বাস্থ্যের যত্নে নিয়োজিত। আমাদের প্ল্যাটফর্মটি ব্যবহারকারীদের তাদের মানসিক স্বাস্থ্য ট্র্যাক করতে, স্বয়ং-সাহায্য সম্পদ ব্যবহার করতে এবং প্রয়োজনে পেশাজীবী সাহায্য পেতে সাহায্য করে।
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Shifa কিভাবে কাজ করে?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Shifa একটি মোবাইল অ্যাপ্লিকেশন যা আপনি আপনার স্মার্টফোনে ডাউনলোড করতে পারেন। অ্যাপ্লিকেশনটিতে আপনি আপনার মানসিক স্বাস্থ্য ট্র্যাক করতে পারেন, স্বয়ং-সাহায্য সম্পদ ব্যবহার করতে পারেন এবং প্রয়োজনে পেশাজীবী সাহায্য পেতে পারেন।
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Shifa ব্যবহার করা কি বিনামূল্যে?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Shifa এর মৌলিক বৈশিষ্ট্যগুলো বিনামূল্যে ব্যবহার করা যায়। তবে, কিছু উন্নত বৈশিষ্ট্য এবং পেশাজীবী পরামর্শের জন্য ফি প্রযোজ্য হতে পারে।
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        আমার তথ্য কি নিরাপদ?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        হ্যাঁ, আমরা আপনার তথ্যের গোপনীয়তা নিশ্চিত করতে প্রতিশ্রুতিবদ্ধ। আমরা আপনার তথ্য শুধুমাত্র আমাদের সেবা উন্নত করতে এবং আপনাকে ভালো সেবা দিতে ব্যবহার করি। আমরা আপনার তথ্য তৃতীয় পক্ষের সাথে শেয়ার করি না।
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        আমি কিভাবে পেশাজীবী সাহায্য পেতে পারি?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        আপনি Shifa অ্যাপ্লিকেশনের মাধ্যমে পেশাজীবী সাহায্য পেতে পারেন। আপনি অ্যাপ্লিকেশনে পেশাজীবীদের তালিকা দেখতে পারেন এবং তাদের সাথে অ্যাপয়েন্টমেন্ট বুক করতে পারেন।
       </div>
     </div>
   </div>
@@ -1349,12 +3151,219 @@
   </div>
 </div>
 
+<!-- Floating Action Button for Emergency -->
+<div class="floating-action-btn" onclick="openFeature('emergency')">
+  🚨
+</div>
+
 <script>
+// Hospital data for different locations
+const hospitalData = {
+  dhaka: [
+    { name: 'জাতীয় মানসিক স্বাস্থ্য ইনস্টিটিউট', address: 'শেরে বাংলা নগর, ঢাকা', contact: 'ফোন: ০২-৫৮৩১৫৬৮৯', lat: 23.777176, lng: 90.399452, type: 'government' },
+    { name: 'স্কয়ার হাসপাতাল', address: 'ধানমন্ডি, ঢাকা', contact: 'ফোন: ০২-৮১৪৪৪৬৬', lat: 23.746466, lng: 90.376015, type: 'private' },
+    { name: 'মনোরোগ বিশেষজ্ঞ হাসপাতাল', address: 'বনানী, ঢাকা', contact: 'ফোন: ০২-৮৮৬৫৫৪৪', lat: 23.790378, lng: 90.409977, type: 'specialized' },
+    { name: 'ঢাকা মেডিকেল কলেজ হাসপাতাল', address: 'বকশীবাজার, ঢাকা', contact: 'ফোন: ০২-৫৫১৬৬১৬১', lat: 23.732934, lng: 90.398382, type: 'government' },
+    { name: 'ইউনাইটেড হাসপাতাল', address: 'গুলশান-১, ঢাকা', contact: 'ফোন: ০২-৮৮৩৬০০০', lat: 23.792523, lng: 90.407589, type: 'private' }
+  ],
+  cumilla: [
+    { name: 'কুমিল্লা মেডিকেল কলেজ হাসপাতাল', address: 'কুমিল্লা সদর, কুমিল্লা', contact: 'ফোন: ০৮১-৬২৫৮৯', lat: 23.460674, lng: 91.180909, type: 'government' },
+    { name: 'কুমিল্লা মানসিক হাসপাতাল', address: 'কোতোয়ালী, কুমিল্লা', contact: 'ফোন: ০৮১-৬৩২১০১', lat: 23.459928, lng: 91.179732, type: 'specialized' },
+    { name: 'আনোয়ার খান মডার্ন হাসপাতাল', address: 'কান্দিরপাড়, কুমিল্লা', contact: 'ফোন: ০৮১-৬২৩৪৫৬', lat: 23.461021, lng: 91.181234, type: 'private' },
+    { name: 'শহীধিরেন্দ্রনাথ দত্ত মেডিকেল কলেজ', address: 'কুমিল্লা সদর, কুমিল্লা', contact: 'ফোন: ০৮১-৬৩৪৫৬৭', lat: 23.462145, lng: 91.182345, type: 'private' },
+    { name: 'কুমিল্লা রেলওয়ে হাসপাতাল', address: 'রেলওয়ে স্টেশন রোড, কুমিল্লা', contact: 'ফোন: ০৮১-৬৪৫৬৭৮', lat: 23.463234, lng: 91.183456, type: 'government' }
+  ],
+  rajshahi: [
+    { name: 'রাজশাহী মেডিকেল কলেজ হাসপাতাল', address: 'রাজপাড়া, রাজশাহী', contact: 'ফোন: ০৭২১-৭৬১০২০', lat: 24.363588, lng: 88.624135, type: 'government' },
+    { name: 'রাজশাহী মানসিক হাসপাতাল', address: 'বোয়ালিয়া, রাজশাহী', contact: 'ফোন: ০৭২১-৭৬২০৩০', lat: 24.364521, lng: 88.625246, type: 'specialized' },
+    { name: 'ল্যাবএইড হাসপাতাল', address: 'সাহেববাজার, রাজশাহী', contact: 'ফোন: ০৭২১-৭৬৩০৪০', lat: 24.365634, lng: 88.626357, type: 'private' },
+    { name: 'বারিন্দ্র হাসপাতাল', address: 'উপশহর, রাজশাহী', contact: 'ফোন: ০৭২১-৭৬৪০৫০', lat: 24.366747, lng: 88.627468, type: 'private' }
+  ],
+  sylhet: [
+    { name: 'এম.এ.জি. ওসমানী মেডিকেল কলেজ হাসপাতাল', address: 'সুনামগঞ্জ রোড, সিলেট', contact: 'ফোন: ০৮২১-৭১২০৪০', lat: 24.894929, lng: 91.869623, type: 'government' },
+    { name: 'সিলেট মানসিক হাসপাতাল', address: 'জিন্দাবাজার, সিলেট', contact: 'ফোন: ০৮২১-৭১৩০৫০', lat: 24.896032, lng: 91.870734, type: 'specialized' },
+    { name: 'মাউন্ট অ্যাডোরা হাসপাতাল', address: 'আম্বরখানা, সিলেট', contact: 'ফোন: ০৮২১-৭১৪০৬০', lat: 24.897145, lng: 91.871845, type: 'private' },
+    { name: 'নূরজাহান হাসপাতাল', address: 'মিরাবাজার, সিলেট', contact: 'ফোন: ০৮২১-৭১৫০৭০', lat: 24.898258, lng: 91.872956, type: 'private' }
+  ],
+  barishal: [
+    { name: 'শের-ই-বাংলা মেডিকেল কলেজ হাসপাতাল', address: 'বরিশাল সদর, বরিশাল', contact: 'ফোন: ০৪৩১-৬৪১০২০', lat: 22.701003, lng: 90.353451, type: 'government' },
+    { name: 'বরিশাল মানসিক হাসপাতাল', address: 'বাবুগঞ্জ, বরিশাল', contact: 'ফোন: ০৪৩১-৬৪২০৩০', lat: 22.702116, lng: 90.354562, type: 'specialized' },
+    { name: 'খান হাসপাতাল', address: 'সদর রোড, বরিশাল', contact: 'ফোন: ০৪৩১-৬৪৩০৪০', lat: 22.703229, lng: 90.355673, type: 'private' },
+    { name: 'পপি হাসপাতাল', address: 'বাকসিরহাট, বরিশাল', contact: 'ফোন: ০৪৩১-৬৪৪০৫০', lat: 22.704342, lng: 90.356784, type: 'private' }
+  ]
+};
+
+let currentLocation = 'dhaka';
+let map;
+let markers = [];
+let currentUser = null;
+
+// Initialize local storage data
+function initializeLocalStorage() {
+  // Check if user data exists in local storage
+  if (!localStorage.getItem('shifaUser')) {
+    // Create default user data
+    const defaultUserData = {
+      username: '',
+      email: '',
+      password: '',
+      profile: {
+        name: 'আপনার নাম',
+        email: 'your.email@example.com',
+        days: 0,
+        journals: 0,
+        achievements: 0
+      },
+      settings: {
+        language: 'bn',
+        theme: 'light',
+        timezone: 'dhaka',
+        notifications: {
+          dailyReminder: true,
+          medicationReminder: true,
+          weeklyReport: false
+        },
+        privacy: {
+          showProfile: false,
+          shareData: false
+        }
+      },
+      data: {
+        moodNotes: [],
+        dailyLogs: [],
+        assessmentResults: [],
+        symptomAnalyses: [],
+        anonymousMessages: [],
+        pregnancyData: {},
+        babyDevelopmentData: {},
+        maternalHealthData: [],
+        journalEntries: [],
+        reminders: [],
+        medications: [],
+        sleepData: [],
+        moodCalendar: {},
+        achievements: [
+          {
+            id: 'consistency',
+            name: 'ধারাবাহিকতা',
+            description: '৭ দিন ধারাবাহিকভাবে মেজাজ ট্র্যাক করেছেন',
+            icon: '🔥',
+            progress: 0,
+            maxProgress: 7
+          },
+          {
+            id: 'meditation',
+            name: 'ধ্যান গুরু',
+            description: '৩০ মিনিট ধ্যান করেছেন',
+            icon: '🧘',
+            progress: 0,
+            maxProgress: 30
+          },
+          {
+            id: 'journal',
+            name: 'জার্নাল লেখক',
+            description: '১০টি জার্নাল এন্ট্রি লিখেছেন',
+            icon: '📖',
+            progress: 0,
+            maxProgress: 10
+          },
+          {
+            id: 'sleep',
+            name: 'ঘুমের মাস্টার',
+            description: '৭ দিন ধারাবাহিকভাবে ৮ ঘন্টা ঘুমিয়েছেন',
+            icon: '😴',
+            progress: 0,
+            maxProgress: 7
+          },
+          {
+            id: 'stress',
+            name: 'স্ট্রেস ফাইটার',
+            description: '৫টি স্ট্রেস ম্যানেজমেন্ট কৌশল শিখেছেন',
+            icon: '💪',
+            progress: 0,
+            maxProgress: 5
+          },
+          {
+            id: 'goals',
+            name: 'লক্ষ্য অর্জনকারী',
+            description: '৫টি মানসিক স্বাস্থ্য লক্ষ্য অর্জন করেছেন',
+            icon: '🎯',
+            progress: 0,
+            maxProgress: 5
+          }
+        ]
+      }
+    };
+    
+    // Save default user data to local storage
+    localStorage.setItem('shifaUser', JSON.stringify(defaultUserData));
+  }
+  
+  // Load user data from local storage
+  currentUser = JSON.parse(localStorage.getItem('shifaUser'));
+  
+  // Update UI with user data
+  updateProfileUI();
+  loadUserData();
+}
+
+// Update profile UI with user data
+function updateProfileUI() {
+  if (currentUser) {
+    document.getElementById('profile-name').textContent = currentUser.profile.name;
+    document.getElementById('profile-email').textContent = currentUser.profile.email;
+    document.getElementById('profile-days').textContent = currentUser.profile.days;
+    document.getElementById('profile-journals').textContent = currentUser.profile.journals;
+    document.getElementById('profile-achievements').textContent = currentUser.profile.achievements;
+    
+    // Update settings
+    document.getElementById('language-setting').value = currentUser.settings.language;
+    document.getElementById('theme-setting').value = currentUser.settings.theme;
+    document.getElementById('timezone-setting').value = currentUser.settings.timezone;
+  }
+}
+
+// Load user data from local storage
+function loadUserData() {
+  // Load daily logs
+  loadDailyLogs();
+  
+  // Load journal entries
+  loadJournalEntries();
+  
+  // Load reminders
+  loadReminders();
+  
+  // Load medications
+  loadMedications();
+  
+  // Load achievements
+  loadAchievements();
+  
+  // Load mood calendar
+  generateCalendar();
+}
+
+// Save user data to local storage
+function saveUserData() {
+  localStorage.setItem('shifaUser', JSON.stringify(currentUser));
+}
+
 // Set current date for date inputs
 document.addEventListener('DOMContentLoaded', function() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('log-date').value = today;
   document.getElementById('maternal-health-date').value = today;
+  document.getElementById('journal-date').value = today;
+  
+  // Initialize local storage
+  initializeLocalStorage();
+  
+  // Initialize map with Dhaka location
+  initMap();
+  
+  // Load Dhaka hospitals
+  showLocation('dhaka', document.querySelector('.location-tab.active'));
 });
 
 // Navigation functions
@@ -1373,13 +3382,56 @@ function showSignUp(){
 }
 
 function login(){ 
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+  
+  if (username.trim() === '' || password.trim() === '') {
+    document.getElementById('login-msg').textContent = 'অনুগ্রহ করে ইউজারনেম এবং পাসওয়ার্ড দিন';
+    return;
+  }
+  
+  // Update user data
+  currentUser.username = username;
+  currentUser.password = password;
+  currentUser.profile.days = (currentUser.profile.days || 0) + 1;
+  
+  // Save to local storage
+  saveUserData();
+  
+  // Update UI
+  updateProfileUI();
+  
   hideAll(); 
   document.getElementById('menu').style.display='block'; 
+  showNotification('সফলভাবে লগইন হয়েছে!', 'আপনি এখন Shifa অ্যাপ্লিকেশনটি ব্যবহার করতে পারেন।');
 }
 
 function signup(){ 
+  const username = document.getElementById('signup-username').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  
+  if (username.trim() === '' || email.trim() === '' || password.trim() === '') {
+    document.getElementById('signup-msg').textContent = 'অনুগ্রহ করে সব ক্ষেত্র পূরণ করুন';
+    return;
+  }
+  
+  // Update user data
+  currentUser.username = username;
+  currentUser.email = email;
+  currentUser.password = password;
+  currentUser.profile.name = username;
+  currentUser.profile.email = email;
+  
+  // Save to local storage
+  saveUserData();
+  
+  // Update UI
+  updateProfileUI();
+  
   hideAll(); 
   document.getElementById('menu').style.display='block'; 
+  showNotification('অ্যাকাউন্ট তৈরি সফল!', 'আপনার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে। এখন লগইন করুন।');
 }
 
 function openFeature(id){ 
@@ -1390,6 +3442,14 @@ function openFeature(id){
 function back(){ 
   hideAll(); 
   document.getElementById('menu').style.display='block'; 
+}
+
+// Show login required notification
+function showLoginRequired() {
+  showNotification('লগইন প্রয়োজন', 'এই বৈশিষ্ট্যটি ব্যবহার করতে অনুগ্রহ করে লগইন করুন।');
+  setTimeout(() => {
+    showLogin();
+  }, 2000);
 }
 
 // Tab functionality
@@ -1449,11 +3509,21 @@ function saveMoodNote() {
   // Add the new log at the beginning of the logs container
   logsContainer.insertBefore(newLog, logsContainer.firstChild.nextSibling);
   
+  // Save to local storage
+  const moodData = {
+    date: new Date().toISOString(),
+    mood: 'happy',
+    note: moodNote
+  };
+  
+  currentUser.data.moodNotes.push(moodData);
+  saveUserData();
+  
   // Clear the mood note text
   document.getElementById('mood-note-text').value = '';
   
   // Show success message
-  alert('আপনার মেজাজ সফলভাবে সংরক্ষিত হয়েছে!');
+  showNotification('মেজাজ সংরক্ষিত!', 'আপনার মেজাজ সফলভাবে সংরক্ষিত হয়েছে।');
 }
 
 function saveDailyLog() {
@@ -1498,11 +3568,110 @@ function saveDailyLog() {
   // Add the new log at the beginning of the logs container
   logsContainer.insertBefore(newLog, logsContainer.firstChild.nextSibling);
   
+  // Save to local storage
+  const logData = {
+    date: logDate,
+    activities: logActivities,
+    mood: logMood
+  };
+  
+  currentUser.data.dailyLogs.push(logData);
+  saveUserData();
+  
   // Clear the form
   document.getElementById('log-activities').value = '';
   
   // Show success message
-  alert('আপনার দৈনিক লগ সফলভাবে সংরক্ষিত হয়েছে!');
+  showNotification('দৈনিক লগ সংরক্ষিত!', 'আপনার দৈনিক লগ সফলভাবে সংরক্ষিত হয়েছে।');
+}
+
+// Load daily logs from local storage
+function loadDailyLogs() {
+  const logsContainer = document.getElementById('daily-logs');
+  
+  // Clear existing logs
+  logsContainer.innerHTML = '<h4>পূর্ববর্তী লগসমূহ</h4>';
+  
+  // Load logs from local storage
+  if (currentUser && currentUser.data.dailyLogs) {
+    currentUser.data.dailyLogs.forEach(log => {
+      const logElement = document.createElement('div');
+      logElement.className = 'forum-post';
+      
+      // Convert date to Bengali format
+      const date = new Date(log.date);
+      const formattedDate = date.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Get mood emoji based on selected mood
+      let moodEmoji = '😐';
+      switch(log.mood) {
+        case 'very-happy': moodEmoji = '😄'; break;
+        case 'happy': moodEmoji = '😊'; break;
+        case 'neutral': moodEmoji = '😐'; break;
+        case 'sad': moodEmoji = '😔'; break;
+        case 'very-sad': moodEmoji = '😢'; break;
+      }
+      
+      logElement.innerHTML = `
+        <div class="forum-post-header">
+          <span>${formattedDate}</span>
+          <span>মেজাজ: ${moodEmoji}</span>
+        </div>
+        <div class="forum-post-content">
+          ${log.activities}
+        </div>
+      `;
+      
+      logsContainer.appendChild(logElement);
+    });
+  }
+  
+  // Add default logs if no logs exist
+  if (!currentUser || !currentUser.data.dailyLogs || currentUser.data.dailyLogs.length === 0) {
+    const defaultLogs = [
+      {
+        date: '2023-05-15',
+        activities: 'আজ সকালে হাঁটা শেষে ভালো লাগছে। কাজে মনোযোগ বেশি ছিল।',
+        mood: 'happy'
+      },
+      {
+        date: '2023-05-14',
+        activities: 'আজ কিছুটা চাপ অনুভব করছি। কাজের চাপ বেশি।',
+        mood: 'neutral'
+      }
+    ];
+    
+    defaultLogs.forEach(log => {
+      const logElement = document.createElement('div');
+      logElement.className = 'forum-post';
+      
+      // Convert date to Bengali format
+      const date = new Date(log.date);
+      const formattedDate = date.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Get mood emoji based on selected mood
+      let moodEmoji = '😐';
+      switch(log.mood) {
+        case 'very-happy': moodEmoji = '😄'; break;
+        case 'happy': moodEmoji = '😊'; break;
+        case 'neutral': moodEmoji = '😐'; break;
+        case 'sad': moodEmoji = '😔'; break;
+        case 'very-sad': moodEmoji = '😢'; break;
+      }
+      
+      logElement.innerHTML = `
+        <div class="forum-post-header">
+          <span>${formattedDate}</span>
+          <span>মেজাজ: ${moodEmoji}</span>
+        </div>
+        <div class="forum-post-content">
+          ${log.activities}
+        </div>
+      `;
+      
+      logsContainer.appendChild(logElement);
+    });
+  }
 }
 
 // Mind Test functionality
@@ -1622,6 +3791,18 @@ function showAssessmentResults() {
   document.querySelector('#assessment-result p').textContent = resultText;
   document.querySelector('#assessment-result div').textContent = resultEmoji;
   
+  // Save assessment result to local storage
+  const assessmentResult = {
+    date: new Date().toISOString(),
+    score: totalScore,
+    resultText: resultText,
+    resultEmoji: resultEmoji,
+    resultScore: resultScore
+  };
+  
+  currentUser.data.assessmentResults.push(assessmentResult);
+  saveUserData();
+  
   // Hide assessment container and show result
   document.getElementById('assessment-container').style.display = 'none';
   document.getElementById('assessment-result').style.display = 'block';
@@ -1657,6 +3838,19 @@ function analyzeSymptoms() {
     return;
   }
   
+  // Get symptom duration
+  const duration = document.getElementById('symptom-duration').value;
+  
+  // Save symptom analysis to local storage
+  const symptomAnalysis = {
+    date: new Date().toISOString(),
+    symptoms: symptoms,
+    duration: duration
+  };
+  
+  currentUser.data.symptomAnalyses.push(symptomAnalysis);
+  saveUserData();
+  
   // Show result
   document.getElementById('symptom-result').style.display = 'block';
 }
@@ -1672,11 +3866,25 @@ function sendAnonymousMessage() {
     return;
   }
   
+  // Save anonymous message to local storage
+  const anonymousMessage = {
+    date: new Date().toISOString(),
+    helpType: helpType,
+    message: messageText,
+    responsePreference: responsePreference
+  };
+  
+  currentUser.data.anonymousMessages.push(anonymousMessage);
+  saveUserData();
+  
   // Show success message
   document.getElementById('anonymous-message-sent').style.display = 'block';
   
   // Clear form
   document.getElementById('anonymous-message-text').value = '';
+  
+  // Show notification
+  showNotification('বার্তা পাঠানো হয়েছে!', 'আপনার বার্তা সফলভাবে পাঠানো হয়েছে। আমরা শীঘ্রই আপনাকে সাহায্য করব।');
 }
 
 // Rituboost functionality
@@ -1879,6 +4087,15 @@ function calculatePregnancy() {
   document.getElementById('due-date').textContent = formattedDueDate;
   document.getElementById('trimester').textContent = trimester;
   
+  // Save pregnancy data to local storage
+  currentUser.data.pregnancyData = {
+    lmpDate: lmpDate,
+    dueDate: dueDate.toISOString(),
+    currentWeek: currentWeek,
+    trimester: trimester
+  };
+  saveUserData();
+  
   // Show result
   document.getElementById('pregnancy-result').style.display = 'block';
 }
@@ -1901,6 +4118,13 @@ function trackBabyDevelopment() {
   // Update UI
   document.getElementById('baby-age').textContent = diffMonths + ' মাস';
   
+  // Save baby development data to local storage
+  currentUser.data.babyDevelopmentData = {
+    birthdate: birthdate,
+    ageInMonths: diffMonths
+  };
+  saveUserData();
+  
   // Show result
   document.getElementById('baby-development-result').style.display = 'block';
 }
@@ -1916,8 +4140,19 @@ function saveMaternalHealth() {
     return;
   }
   
+  // Save maternal health data to local storage
+  const maternalHealthData = {
+    date: date,
+    mood: mood,
+    physicalIssues: physicalIssues,
+    mentalIssues: mentalIssues
+  };
+  
+  currentUser.data.maternalHealthData.push(maternalHealthData);
+  saveUserData();
+  
   // Show success message
-  alert('আপনার মাতৃস্বাস্থ্য তথ্য সফলভাবে সংরক্ষিত হয়েছে!');
+  showNotification('মাতৃস্বাস্থ্য তথ্য সংরক্ষিত!', 'আপনার মাতৃস্বাস্থ্য তথ্য সফলভাবে সংরক্ষিত হয়েছে।');
   
   // Clear form
   document.getElementById('maternal-physical-issues').value = '';
@@ -2030,11 +4265,6 @@ function createPost() {
     return;
   }
   
-  // Create a new post element
-  const postsContainer = document.querySelector('#forum .content-area > div:last-of-type');
-  const newPost = document.createElement('div');
-  newPost.className = 'forum-post';
-  
   // Get category name in Bengali
   let categoryName = '';
   switch(category) {
@@ -2046,6 +4276,11 @@ function createPost() {
     case 'therapy': categoryName = 'থেরাপি'; break;
     default: categoryName = 'অন্যান্য';
   }
+  
+  // Create a new post element
+  const postsContainer = document.getElementById('forum-posts');
+  const newPost = document.createElement('div');
+  newPost.className = 'forum-post';
   
   newPost.innerHTML = `
     <div class="forum-post-header">
@@ -2065,12 +4300,147 @@ function createPost() {
   // Add the new post at the beginning of the posts container
   postsContainer.insertBefore(newPost, postsContainer.firstChild);
   
+  // Save post to local storage
+  const postData = {
+    title: title,
+    category: category,
+    content: content,
+    date: new Date().toISOString(),
+    likes: 0,
+    comments: []
+  };
+  
+  // Initialize forum posts array if it doesn't exist
+  if (!currentUser.data.forumPosts) {
+    currentUser.data.forumPosts = [];
+  }
+  
+  currentUser.data.forumPosts.unshift(postData);
+  saveUserData();
+  
   // Clear form
   document.getElementById('post-title').value = '';
   document.getElementById('post-content').value = '';
   
   // Show success message
-  alert('আপনার পোস্ট সফলভাবে পোস্ট করা হয়েছে!');
+  showNotification('পোস্ট সফল!', 'আপনার পোস্ট সফলভাবে পোস্ট করা হয়েছে।');
+}
+
+// Load forum posts from local storage
+function loadForumPosts() {
+  const postsContainer = document.getElementById('forum-posts');
+  
+  // Clear existing posts
+  postsContainer.innerHTML = '';
+  
+  // Load posts from local storage
+  if (currentUser && currentUser.data.forumPosts) {
+    currentUser.data.forumPosts.forEach(post => {
+      const postElement = document.createElement('div');
+      postElement.className = 'forum-post';
+      
+      // Get category name in Bengali
+      let categoryName = '';
+      switch(post.category) {
+        case 'anxiety': categoryName = 'উদ্বেগ'; break;
+        case 'depression': categoryName = 'বিষণ্ণতা'; break;
+        case 'stress': categoryName = 'স্ট্রেস'; break;
+        case 'relationships': categoryName = 'সম্পর্ক'; break;
+        case 'self-care': categoryName = 'আত্মযত্ন'; break;
+        case 'therapy': categoryName = 'থেরাপি'; break;
+        default: categoryName = 'অন্যান্য';
+      }
+      
+      // Format date
+      const date = new Date(post.date);
+      const formattedDate = date.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      postElement.innerHTML = `
+        <div class="forum-post-header">
+          <span>আপনি</span>
+          <span>বিষয়: ${categoryName}</span>
+        </div>
+        <div class="forum-post-content">
+          ${post.content}
+        </div>
+        <div class="forum-post-actions">
+          <span>👍 ${post.likes}</span>
+          <span>💬 ${post.comments.length} টি মন্তব্য</span>
+          <span>🕒 ${formattedDate}</span>
+        </div>
+      `;
+      
+      postsContainer.appendChild(postElement);
+    });
+  }
+  
+  // Add default posts if no posts exist
+  if (!currentUser || !currentUser.data.forumPosts || currentUser.data.forumPosts.length === 0) {
+    const defaultPosts = [
+      {
+        title: 'কাজের চাপ',
+        category: 'anxiety',
+        content: 'আমি গত কয়েক মাস ধরে কাজের চাপে খুব উদ্বিগ্ন থাকছি। কেউ কি জানেন কিভাবে এই পরিস্থিতি মোকাবেলা করা যায়?',
+        date: '2023-05-15T10:30:00',
+        likes: 12,
+        comments: []
+      },
+      {
+        title: 'ধ্যানের উপকারিতা',
+        category: 'self-care',
+        content: 'আমি সম্প্রতি ধ্যান শুরু করেছি এবং এটি আমার মানসিক স্বাস্থ্যের উন্নতি করছে। আমি প্রতিদিন ১০ মিনিট ধ্যান করি এবং এটি আমাকে খুব শান্ত রাখে।',
+        date: '2023-05-14T15:45:00',
+        likes: 24,
+        comments: []
+      },
+      {
+        title: 'থেরাপির অভিজ্ঞতা',
+        category: 'therapy',
+        content: 'আমি গত মাসে একজন থেরাপিস্টের সাথে কথা বলা শুরু করেছি এবং এটি আমার জন্য খুব উপকারী হচ্ছে। যারা থেরাপি নিয়ে চিন্তিত, তাদের বলবো একবার চেষ্টা করে দেখুন।',
+        date: '2023-05-12T09:20:00',
+        likes: 18,
+        comments: []
+      }
+    ];
+    
+    defaultPosts.forEach(post => {
+      const postElement = document.createElement('div');
+      postElement.className = 'forum-post';
+      
+      // Get category name in Bengali
+      let categoryName = '';
+      switch(post.category) {
+        case 'anxiety': categoryName = 'উদ্বেগ'; break;
+        case 'depression': categoryName = 'বিষণ্ণতা'; break;
+        case 'stress': categoryName = 'স্ট্রেস'; break;
+        case 'relationships': categoryName = 'সম্পর্ক'; break;
+        case 'self-care': categoryName = 'আত্মযত্ন'; break;
+        case 'therapy': categoryName = 'থেরাপি'; break;
+        default: categoryName = 'অন্যান্য';
+      }
+      
+      // Format date
+      const date = new Date(post.date);
+      const formattedDate = date.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      postElement.innerHTML = `
+        <div class="forum-post-header">
+          <span>অনন্যা</span>
+          <span>বিষয়: ${categoryName}</span>
+        </div>
+        <div class="forum-post-content">
+          ${post.content}
+        </div>
+        <div class="forum-post-actions">
+          <span>👍 ${post.likes}</span>
+          <span>💬 ${post.comments.length} টি মন্তব্য</span>
+          <span>🕒 ${formattedDate}</span>
+        </div>
+      `;
+      
+      postsContainer.appendChild(postElement);
+    });
+  }
 }
 
 // Daily Reminder functionality
@@ -2094,7 +4464,7 @@ function addReminder() {
   }
   
   // Create a new reminder element
-  const remindersContainer = document.querySelector('#reminder .content-area > div:last-of-type');
+  const remindersContainer = document.getElementById('reminders-list');
   const newReminder = document.createElement('div');
   newReminder.className = 'reminder-item';
   
@@ -2118,12 +4488,1020 @@ function addReminder() {
   // Add the new reminder to the reminders container
   remindersContainer.appendChild(newReminder);
   
+  // Save reminder to local storage
+  const reminderData = {
+    title: title,
+    time: time,
+    repeat: repeat,
+    enabled: true
+  };
+  
+  // Initialize reminders array if it doesn't exist
+  if (!currentUser.data.reminders) {
+    currentUser.data.reminders = [];
+  }
+  
+  currentUser.data.reminders.push(reminderData);
+  saveUserData();
+  
   // Clear form
   document.getElementById('reminder-title').value = '';
   document.getElementById('reminder-time').value = '';
   
   // Show success message
-  alert('আপনার রিমাইন্ডার সফলভাবে যোগ করা হয়েছে!');
+  showNotification('রিমাইন্ডার যোগ করা হয়েছে!', 'আপনার রিমাইন্ডার সফলভাবে যোগ করা হয়েছে।');
+}
+
+// Load reminders from local storage
+function loadReminders() {
+  const remindersContainer = document.getElementById('reminders-list');
+  
+  // Clear existing reminders
+  remindersContainer.innerHTML = '';
+  
+  // Load reminders from local storage
+  if (currentUser && currentUser.data.reminders) {
+    currentUser.data.reminders.forEach(reminder => {
+      const reminderElement = document.createElement('div');
+      reminderElement.className = 'reminder-item';
+      
+      // Get repeat text in Bengali
+      let repeatText = '';
+      switch(reminder.repeat) {
+        case 'daily': repeatText = 'প্রতিদিন'; break;
+        case 'weekly': repeatText = 'সাপ্তাহিক'; break;
+        case 'monthly': repeatText = 'মাসিক'; break;
+        default: repeatText = 'কাস্টম';
+      }
+      
+      // Choose an icon based on the title
+      let icon = '📝';
+      if (reminder.title.toLowerCase().includes('পানি')) icon = '💧';
+      else if (reminder.title.toLowerCase().includes('হাস')) icon = '😊';
+      else if (reminder.title.toLowerCase().includes('বিশ্রাম') || reminder.title.toLowerCase().includes('ঘুম')) icon = '💤';
+      else if (reminder.title.toLowerCase().includes('ধ্যান') || reminder.title.toLowerCase().includes('যোগ')) icon = '🧘';
+      else if (reminder.title.toLowerCase().includes('বই') || reminder.title.toLowerCase().includes('পড়')) icon = '📖';
+      
+      reminderElement.innerHTML = `
+        <div class="reminder-icon">${icon}</div>
+        <div class="reminder-content">
+          <div>${reminder.title}</div>
+          <div class="reminder-time">${repeatText}, ${reminder.time}</div>
+        </div>
+        <button class="reminder-toggle">${reminder.enabled ? '🔔' : '🔕'}</button>
+      `;
+      
+      remindersContainer.appendChild(reminderElement);
+    });
+  }
+  
+  // Add default reminders if no reminders exist
+  if (!currentUser || !currentUser.data.reminders || currentUser.data.reminders.length === 0) {
+    const defaultReminders = [
+      {
+        title: 'পানি পান করুন',
+        time: '09:00',
+        repeat: 'daily',
+        enabled: true
+      },
+      {
+        title: 'হাসুন',
+        time: '09:00',
+        repeat: 'daily',
+        enabled: true
+      },
+      {
+        title: 'বিশ্রাম নিন',
+        time: '13:00',
+        repeat: 'daily',
+        enabled: true
+      },
+      {
+        title: 'ধ্যান করুন',
+        time: '18:00',
+        repeat: 'daily',
+        enabled: true
+      },
+      {
+        title: 'বই পড়ুন',
+        time: '21:00',
+        repeat: 'daily',
+        enabled: true
+      }
+    ];
+    
+    defaultReminders.forEach(reminder => {
+      const reminderElement = document.createElement('div');
+      reminderElement.className = 'reminder-item';
+      
+      // Get repeat text in Bengali
+      let repeatText = '';
+      switch(reminder.repeat) {
+        case 'daily': repeatText = 'প্রতিদিন'; break;
+        case 'weekly': repeatText = 'সাপ্তাহিক'; break;
+        case 'monthly': repeatText = 'মাসিক'; break;
+        default: repeatText = 'কাস্টম';
+      }
+      
+      // Choose an icon based on the title
+      let icon = '📝';
+      if (reminder.title.toLowerCase().includes('পানি')) icon = '💧';
+      else if (reminder.title.toLowerCase().includes('হাস')) icon = '😊';
+      else if (reminder.title.toLowerCase().includes('বিশ্রাম') || reminder.title.toLowerCase().includes('ঘুম')) icon = '💤';
+      else if (reminder.title.toLowerCase().includes('ধ্যান') || reminder.title.toLowerCase().includes('যোগ')) icon = '🧘';
+      else if (reminder.title.toLowerCase().includes('বই') || reminder.title.toLowerCase().includes('পড়')) icon = '📖';
+      
+      reminderElement.innerHTML = `
+        <div class="reminder-icon">${icon}</div>
+        <div class="reminder-content">
+          <div>${reminder.title}</div>
+          <div class="reminder-time">${repeatText}, ${reminder.time}</div>
+        </div>
+        <button class="reminder-toggle">${reminder.enabled ? '🔔' : '🔕'}</button>
+      `;
+      
+      remindersContainer.appendChild(reminderElement);
+    });
+  }
+}
+
+// Hospital List functionality
+function initMap() {
+  // Initialize the map with Dhaka coordinates
+  map = L.map('hospital-map').setView([23.777176, 90.399452], 12);
+  
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  
+  // Add markers for current location
+  addHospitalMarkers(currentLocation);
+}
+
+function addHospitalMarkers(location) {
+  // Clear existing markers
+  markers.forEach(marker => map.removeLayer(marker));
+  markers = [];
+  
+  // Get hospitals for the selected location
+  const hospitals = hospitalData[location];
+  
+  // Add markers for hospitals
+  hospitals.forEach(hospital => {
+    const marker = L.marker([hospital.lat, hospital.lng]).addTo(map);
+    marker.bindPopup(`<b>${hospital.name}</b><br>${hospital.address}<br>${hospital.contact}`);
+    markers.push(marker);
+  });
+  
+  // Adjust map view to show all markers
+  if (markers.length > 0) {
+    const group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.1));
+  }
+}
+
+function showLocation(location, element) {
+  // Update active tab
+  document.querySelectorAll('.location-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  element.classList.add('active');
+  
+  // Update current location
+  currentLocation = location;
+  
+  // Update hospital list
+  updateHospitalList(location);
+  
+  // Update map markers
+  addHospitalMarkers(location);
+}
+
+function updateHospitalList(location) {
+  const hospitalList = document.getElementById('hospital-list');
+  const hospitals = hospitalData[location];
+  
+  // Clear existing list
+  hospitalList.innerHTML = '';
+  
+  // Add hospitals to the list
+  hospitals.forEach(hospital => {
+    const hospitalItem = document.createElement('div');
+    hospitalItem.className = 'hospital-item';
+    hospitalItem.dataset.type = hospital.type;
+    
+    hospitalItem.innerHTML = `
+      <div class="hospital-icon">🏥</div>
+      <div class="hospital-info">
+        <div class="hospital-name">${hospital.name}</div>
+        <div class="hospital-address">${hospital.address}</div>
+        <div class="hospital-contact">${hospital.contact}</div>
+      </div>
+      <button onclick="showOnMap(${hospital.lat}, ${hospital.lng})">মানচিত্রে দেখুন</button>
+    `;
+    
+    hospitalList.appendChild(hospitalItem);
+  });
+}
+
+function showOnMap(lat, lng) {
+  // Center the map on the selected hospital
+  map.setView([lat, lng], 15);
+  
+  // Find the marker at this location and open its popup
+  markers.forEach(marker => {
+    const position = marker.getLatLng();
+    if (position.lat === lat && position.lng === lng) {
+      marker.openPopup();
+    }
+  });
+}
+
+function filterHospitals(type, element) {
+  // Update active filter
+  document.querySelectorAll('.filter-option').forEach(option => {
+    option.classList.remove('active');
+  });
+  element.classList.add('active');
+  
+  // Filter hospital items
+  const hospitalItems = document.querySelectorAll('.hospital-item');
+  hospitalItems.forEach(item => {
+    if (type === 'all' || item.dataset.type === type) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// Emergency Contacts functionality
+function callNumber(number) {
+  // In a real app, this would initiate a phone call
+  showNotification('কল করা হচ্ছে', `${number} নম্বরে কল করা হচ্ছে...`);
+}
+
+// Professional Directory functionality
+function filterProfessionals(type, element) {
+  // Update active filter
+  document.querySelectorAll('.filter-option').forEach(option => {
+    option.classList.remove('active');
+  });
+  element.classList.add('active');
+  
+  // Filter professional cards
+  const professionalCards = document.querySelectorAll('.professional-card');
+  professionalCards.forEach(card => {
+    if (type === 'all' || card.dataset.type === type) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function bookAppointment(name) {
+  // In a real app, this would open an appointment booking form
+  showNotification('অ্যাপয়েন্টমেন্ট বুক করা হচ্ছে', `${name} এর সাথে অ্যাপয়েন্টমেন্ট বুক করা হচ্ছে...`);
+}
+
+// Self-Help Resources functionality
+function openSelfHelpResource(type) {
+  // In a real app, this would open a detailed view of the resource
+  showNotification('সম্পদ খোলা হচ্ছে', `${type} সম্পদ খোলা হচ্ছে...`);
+}
+
+// Mood Calendar functionality
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+function generateCalendar() {
+  const calendarGrid = document.getElementById('calendar-grid');
+  const monthNames = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+  
+  // Update month display
+  document.getElementById('current-month').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+  
+  // Clear calendar
+  calendarGrid.innerHTML = '';
+  
+  // Add day headers
+  const dayHeaders = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি', 'শুক্র', 'শনি'];
+  dayHeaders.forEach(day => {
+    const dayHeader = document.createElement('div');
+    dayHeader.style.fontWeight = 'bold';
+    dayHeader.style.textAlign = 'center';
+    dayHeader.textContent = day;
+    calendarGrid.appendChild(dayHeader);
+  });
+  
+  // Get first day of month
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  
+  // Add empty cells for days before month starts
+  for (let i = 0; i < firstDay; i++) {
+    const emptyDay = document.createElement('div');
+    calendarGrid.appendChild(emptyDay);
+  }
+  
+  // Add days of month
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayElement = document.createElement('div');
+    dayElement.className = 'calendar-day';
+    
+    // Add day number
+    const dayNumber = document.createElement('div');
+    dayNumber.className = 'calendar-day-number';
+    dayNumber.textContent = day;
+    dayElement.appendChild(dayNumber);
+    
+    // Check if mood data exists for this day
+    const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
+    let moodEmoji = '';
+    
+    if (currentUser && currentUser.data.moodCalendar && currentUser.data.moodCalendar[dateKey]) {
+      moodEmoji = currentUser.data.moodCalendar[dateKey].emoji;
+    } else {
+      // Add random mood emoji for demo
+      const moods = ['😄', '😊', '😐', '😔', '😢'];
+      moodEmoji = moods[Math.floor(Math.random() * moods.length)];
+    }
+    
+    const moodElement = document.createElement('div');
+    moodElement.className = 'calendar-day-mood';
+    moodElement.textContent = moodEmoji;
+    dayElement.appendChild(moodElement);
+    
+    // Add click event
+    dayElement.onclick = function() {
+      selectCalendarDay(this, day, moodEmoji);
+    };
+    
+    calendarGrid.appendChild(dayElement);
+  }
+}
+
+function previousMonth() {
+  currentMonth--;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  generateCalendar();
+}
+
+function nextMonth() {
+  currentMonth++;
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  generateCalendar();
+}
+
+function selectCalendarDay(element, day, moodEmoji) {
+  // Remove selected class from all days
+  document.querySelectorAll('.calendar-day').forEach(day => {
+    day.classList.remove('selected');
+  });
+  
+  // Add selected class to clicked day
+  element.classList.add('selected');
+  
+  // Save mood data to local storage
+  const dateKey = `${currentYear}-${currentMonth + 1}-${day}`;
+  
+  if (!currentUser.data.moodCalendar) {
+    currentUser.data.moodCalendar = {};
+  }
+  
+  currentUser.data.moodCalendar[dateKey] = {
+    date: dateKey,
+    emoji: moodEmoji
+  };
+  
+  saveUserData();
+  
+  // In a real app, this would open a form to enter mood for that day
+  showNotification('দিন নির্বাচিত', `${dateKey} তারিখের জন্য মেজাজ নির্বাচন করুন।`);
+}
+
+// Sleep Tracker functionality
+function selectSleepQuality(element, quality) {
+  // Remove selected class from all options
+  const options = document.querySelectorAll('.sleep-quality-option');
+  options.forEach(option => option.style.border = 'none');
+  
+  // Add selected class to clicked option
+  element.style.border = '2px solid #007acc';
+  
+  // Show sleep details section
+  document.getElementById('sleep-details').style.display = 'block';
+}
+
+function saveSleepData() {
+  const sleepTime = document.getElementById('sleep-time').value;
+  const wakeTime = document.getElementById('wake-time').value;
+  const wakeUps = document.getElementById('wake-ups').value;
+  const preSleepActivities = document.getElementById('pre-sleep-activities').value;
+  
+  if (sleepTime === '' || wakeTime === '') {
+    alert('অনুগ্রহ করে ঘুমানোর এবং ঘুম থেকে ওঠার সময় দিন');
+    return;
+  }
+  
+  // Save sleep data to local storage
+  const sleepData = {
+    date: new Date().toISOString().split('T')[0],
+    sleepTime: sleepTime,
+    wakeTime: wakeTime,
+    wakeUps: wakeUps,
+    preSleepActivities: preSleepActivities
+  };
+  
+  currentUser.data.sleepData.push(sleepData);
+  saveUserData();
+  
+  // Show success message
+  showNotification('ঘুমের তথ্য সংরক্ষিত!', 'আপনার ঘুমের তথ্য সফলভাবে সংরক্ষিত হয়েছে।');
+  
+  // Clear form
+  document.getElementById('sleep-time').value = '';
+  document.getElementById('wake-time').value = '';
+  document.getElementById('wake-ups').value = '0';
+  document.getElementById('pre-sleep-activities').value = '';
+}
+
+// Journal functionality
+function saveJournalEntry() {
+  const date = document.getElementById('journal-date').value;
+  const title = document.getElementById('journal-title').value;
+  const mood = document.getElementById('journal-mood').value;
+  const content = document.getElementById('journal-content').value;
+  const tags = document.getElementById('journal-tags').value;
+  
+  if (title.trim() === '' || content.trim() === '') {
+    alert('অনুগ্রহ করে শিরোনাম এবং বিষয়বস্তু লিখুন');
+    return;
+  }
+  
+  // Create a new journal entry
+  const journalContainer = document.getElementById('journal-entries');
+  const newEntry = document.createElement('div');
+  newEntry.className = 'journal-entry';
+  
+  // Convert date to Bengali format
+  const dateObj = new Date(date);
+  const formattedDate = dateObj.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+  
+  // Get mood emoji based on selected mood
+  let moodEmoji = '😐';
+  switch(mood) {
+    case 'very-happy': moodEmoji = '😄'; break;
+    case 'happy': moodEmoji = '😊'; break;
+    case 'neutral': moodEmoji = '😐'; break;
+    case 'sad': moodEmoji = '😔'; break;
+    case 'very-sad': moodEmoji = '😢'; break;
+  }
+  
+  newEntry.innerHTML = `
+    <div class="journal-date">${formattedDate}</div>
+    <div class="journal-content">${content}</div>
+    <div class="journal-mood">মেজাজ: ${moodEmoji}</div>
+    <div class="journal-mood">ট্যাগ: ${tags}</div>
+  `;
+  
+  // Add the new entry at the beginning of the journal container
+  journalContainer.insertBefore(newEntry, journalContainer.firstChild);
+  
+  // Save journal entry to local storage
+  const journalEntry = {
+    date: date,
+    title: title,
+    mood: mood,
+    content: content,
+    tags: tags
+  };
+  
+  // Initialize journal entries array if it doesn't exist
+  if (!currentUser.data.journalEntries) {
+    currentUser.data.journalEntries = [];
+  }
+  
+  currentUser.data.journalEntries.unshift(journalEntry);
+  
+  // Update profile stats
+  currentUser.profile.journals = currentUser.data.journalEntries.length;
+  saveUserData();
+  updateProfileUI();
+  
+  // Clear form
+  document.getElementById('journal-title').value = '';
+  document.getElementById('journal-content').value = '';
+  document.getElementById('journal-tags').value = '';
+  
+  // Show success message
+  showNotification('জার্নাল এন্ট্রি সংরক্ষিত!', 'আপনার জার্নাল এন্ট্রি সফলভাবে সংরক্ষিত হয়েছে।');
+}
+
+// Load journal entries from local storage
+function loadJournalEntries() {
+  const journalContainer = document.getElementById('journal-entries');
+  
+  // Clear existing entries
+  journalContainer.innerHTML = '';
+  
+  // Load journal entries from local storage
+  if (currentUser && currentUser.data.journalEntries) {
+    currentUser.data.journalEntries.forEach(entry => {
+      const entryElement = document.createElement('div');
+      entryElement.className = 'journal-entry';
+      
+      // Convert date to Bengali format
+      const dateObj = new Date(entry.date);
+      const formattedDate = dateObj.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Get mood emoji based on selected mood
+      let moodEmoji = '😐';
+      switch(entry.mood) {
+        case 'very-happy': moodEmoji = '😄'; break;
+        case 'happy': moodEmoji = '😊'; break;
+        case 'neutral': moodEmoji = '😐'; break;
+        case 'sad': moodEmoji = '😔'; break;
+        case 'very-sad': moodEmoji = '😢'; break;
+      }
+      
+      entryElement.innerHTML = `
+        <div class="journal-date">${formattedDate}</div>
+        <div class="journal-content">${entry.content}</div>
+        <div class="journal-mood">মেজাজ: ${moodEmoji}</div>
+        <div class="journal-mood">ট্যাগ: ${entry.tags}</div>
+      `;
+      
+      journalContainer.appendChild(entryElement);
+    });
+  }
+  
+  // Add default entries if no entries exist
+  if (!currentUser || !currentUser.data.journalEntries || currentUser.data.journalEntries.length === 0) {
+    const defaultEntries = [
+      {
+        date: '2023-05-15',
+        title: 'চাপ',
+        mood: 'sad',
+        content: 'আজ আমি অনেক চাপে ছিলাম। কাজের চাপ এবং পারিবারিক সমস্যা মিলে আমাকে খুব ক্লান্ত করে তুলেছিল। আমি বিকেলে একা হেঁটে বেড়াতে বের হয়েছিলাম এবং সেটা আমাকে অনেক শান্তি দিয়েছে। কখনও কখনও নিজেকে কিছু সময় দেওয়া খুবই গুরুত্বপূর্ণ।',
+        tags: '#স্ট্রেস #আত্মযত্ন'
+      },
+      {
+        date: '2023-05-12',
+        title: 'বন্ধুদের সাথে',
+        mood: 'happy',
+        content: 'আজ আমি আমার বন্ধুদের সাথে দেখা করেছি। আমরা অনেক কথা বলেছি এবং হেসেছি। বন্ধুদের সাথে সময় কাটানো আমাকে সত্যিই ভালো লাগে। আমি মনে করি সামাজিক সম্পর্ক আমাদের মানসিক স্বাস্থ্যের জন্য খুবই গুরুত্বপূর্ণ।',
+        tags: '#বন্ধু #সুখ'
+      },
+      {
+        date: '2023-05-10',
+        title: 'ধ্যান',
+        mood: 'happy',
+        content: 'আজ আমি সকালে ধ্যান করেছি। এটি আমার জন্য একটি নতুন অভিজ্ঞতা ছিল। আমি অনেক শান্ত অনুভব করেছি এবং সারা দিন আমার মনোযোগ বেশি ছিল। আমি মনে করি আমি নিয়মিত ধ্যান করতে চাই।',
+        tags: '#ধ্যান #শান্তি'
+      }
+    ];
+    
+    defaultEntries.forEach(entry => {
+      const entryElement = document.createElement('div');
+      entryElement.className = 'journal-entry';
+      
+      // Convert date to Bengali format
+      const dateObj = new Date(entry.date);
+      const formattedDate = dateObj.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Get mood emoji based on selected mood
+      let moodEmoji = '😐';
+      switch(entry.mood) {
+        case 'very-happy': moodEmoji = '😄'; break;
+        case 'happy': moodEmoji = '😊'; break;
+        case 'neutral': moodEmoji = '😐'; break;
+        case 'sad': moodEmoji = '😔'; break;
+        case 'very-sad': moodEmoji = '😢'; break;
+      }
+      
+      entryElement.innerHTML = `
+        <div class="journal-date">${formattedDate}</div>
+        <div class="journal-content">${entry.content}</div>
+        <div class="journal-mood">মেজাজ: ${moodEmoji}</div>
+        <div class="journal-mood">ট্যাগ: ${entry.tags}</div>
+      `;
+      
+      journalContainer.appendChild(entryElement);
+    });
+  }
+}
+
+// Medication Reminder functionality
+function addMedication() {
+  const name = document.getElementById('medication-name').value;
+  const dosage = document.getElementById('medication-dosage').value;
+  const time = document.getElementById('medication-time').value;
+  const repeat = document.getElementById('medication-repeat').value;
+  const notes = document.getElementById('medication-notes').value;
+  
+  if (name.trim() === '' || dosage.trim() === '' || time === '') {
+    alert('অনুগ্রহ করে ঔষধের নাম, ডোজ এবং সময় দিন');
+    return;
+  }
+  
+  // Get repeat text in Bengali
+  let repeatText = '';
+  switch(repeat) {
+    case 'daily': repeatText = 'প্রতিদিন'; break;
+    case 'weekly': repeatText = 'সাপ্তাহিক'; break;
+    case 'monthly': repeatText = 'মাসিক'; break;
+    default: repeatText = 'কাস্টম';
+  }
+  
+  // Create a new medication element
+  const medicationsContainer = document.getElementById('medications-list');
+  const newMedication = document.createElement('div');
+  newMedication.className = 'medication-item';
+  
+  newMedication.innerHTML = `
+    <div class="medication-icon">💊</div>
+    <div class="medication-info">
+      <div class="medication-name">${name}</div>
+      <div class="medication-dosage">${dosage}</div>
+      <div class="medication-time">${time}, ${repeatText}</div>
+    </div>
+    <button class="reminder-toggle">🔔</button>
+  `;
+  
+  // Add the new medication to the medications container
+  medicationsContainer.appendChild(newMedication);
+  
+  // Save medication to local storage
+  const medicationData = {
+    name: name,
+    dosage: dosage,
+    time: time,
+    repeat: repeat,
+    notes: notes,
+    enabled: true
+  };
+  
+  // Initialize medications array if it doesn't exist
+  if (!currentUser.data.medications) {
+    currentUser.data.medications = [];
+  }
+  
+  currentUser.data.medications.push(medicationData);
+  saveUserData();
+  
+  // Clear form
+  document.getElementById('medication-name').value = '';
+  document.getElementById('medication-dosage').value = '';
+  document.getElementById('medication-time').value = '';
+  document.getElementById('medication-notes').value = '';
+  
+  // Show success message
+  showNotification('ঔষধ যোগ করা হয়েছে!', 'আপনার ঔষধ সফলভাবে যোগ করা হয়েছে।');
+}
+
+// Load medications from local storage
+function loadMedications() {
+  const medicationsContainer = document.getElementById('medications-list');
+  
+  // Clear existing medications
+  medicationsContainer.innerHTML = '';
+  
+  // Load medications from local storage
+  if (currentUser && currentUser.data.medications) {
+    currentUser.data.medications.forEach(medication => {
+      const medicationElement = document.createElement('div');
+      medicationElement.className = 'medication-item';
+      
+      // Get repeat text in Bengali
+      let repeatText = '';
+      switch(medication.repeat) {
+        case 'daily': repeatText = 'প্রতিদিন'; break;
+        case 'weekly': repeatText = 'সাপ্তাহিক'; break;
+        case 'monthly': repeatText = 'মাসিক'; break;
+        default: repeatText = 'কাস্টম';
+      }
+      
+      medicationElement.innerHTML = `
+        <div class="medication-icon">💊</div>
+        <div class="medication-info">
+          <div class="medication-name">${medication.name}</div>
+          <div class="medication-dosage">${medication.dosage}</div>
+          <div class="medication-time">${medication.time}, ${repeatText}</div>
+        </div>
+        <button class="reminder-toggle">${medication.enabled ? '🔔' : '🔕'}</button>
+      `;
+      
+      medicationsContainer.appendChild(medicationElement);
+    });
+  }
+  
+  // Add default medications if no medications exist
+  if (!currentUser || !currentUser.data.medications || currentUser.data.medications.length === 0) {
+    const defaultMedications = [
+      {
+        name: 'সেরট্রালিন',
+        dosage: '১টি ট্যাবলেট',
+        time: '08:00',
+        repeat: 'daily',
+        notes: '',
+        enabled: true
+      },
+      {
+        name: 'ভিটামিন ডি',
+        dosage: '১টি ক্যাপসুল',
+        time: '13:00',
+        repeat: 'daily',
+        notes: '',
+        enabled: true
+      },
+      {
+        name: 'মেলাটোনিন',
+        dosage: '১টি ট্যাবলেট',
+        time: '21:00',
+        repeat: 'daily',
+        notes: '',
+        enabled: true
+      }
+    ];
+    
+    defaultMedications.forEach(medication => {
+      const medicationElement = document.createElement('div');
+      medicationElement.className = 'medication-item';
+      
+      // Get repeat text in Bengali
+      let repeatText = '';
+      switch(medication.repeat) {
+        case 'daily': repeatText = 'প্রতিদিন'; break;
+        case 'weekly': repeatText = 'সাপ্তাহিক'; break;
+        case 'monthly': repeatText = 'মাসিক'; break;
+        default: repeatText = 'কাস্টম';
+      }
+      
+      medicationElement.innerHTML = `
+        <div class="medication-icon">💊</div>
+        <div class="medication-info">
+          <div class="medication-name">${medication.name}</div>
+          <div class="medication-dosage">${medication.dosage}</div>
+          <div class="medication-time">${medication.time}, ${repeatText}</div>
+        </div>
+        <button class="reminder-toggle">${medication.enabled ? '🔔' : '🔕'}</button>
+      `;
+      
+      medicationsContainer.appendChild(medicationElement);
+    });
+  }
+}
+
+// Stress Management functionality
+let breathingInterval;
+let isBreathing = false;
+
+function startBreathingExercise() {
+  const circle = document.getElementById('breathing-circle');
+  
+  if (isBreathing) {
+    // Stop breathing exercise
+    clearInterval(breathingInterval);
+    isBreathing = false;
+    circle.textContent = 'শ্বাস নিন';
+    circle.classList.remove('inhale', 'exhale');
+  } else {
+    // Start breathing exercise
+    isBreathing = true;
+    circle.textContent = 'শ্বাস নিন';
+    
+    // Start breathing cycle
+    let phase = 'inhale';
+    let count = 0;
+    
+    breathingInterval = setInterval(() => {
+      count++;
+      
+      if (count <= 4) {
+        // Inhale phase
+        if (phase !== 'inhale') {
+          phase = 'inhale';
+          circle.textContent = 'শ্বাস নিন';
+          circle.classList.add('inhale');
+          circle.classList.remove('exhale');
+        }
+      } else if (count <= 8) {
+        // Hold phase
+        if (phase !== 'hold') {
+          phase = 'hold';
+          circle.textContent = 'ধরে রাখুন';
+        }
+      } else if (count <= 12) {
+        // Exhale phase
+        if (phase !== 'exhale') {
+          phase = 'exhale';
+          circle.textContent = 'শ্বাস ছাড়ুন';
+          circle.classList.add('exhale');
+          circle.classList.remove('inhale');
+        }
+      } else {
+        // Reset cycle
+        count = 0;
+        phase = 'inhale';
+        circle.textContent = 'শ্বাস নিন';
+        circle.classList.add('inhale');
+        circle.classList.remove('exhale');
+      }
+    }, 1000);
+  }
+}
+
+function startQuickMeditation() {
+  // In a real app, this would start a guided meditation
+  showNotification('ধ্যান শুরু হচ্ছে', 'দ্রুত ধ্যান শুরু হচ্ছে...');
+}
+
+function playCalmingMusic() {
+  // In a real app, this would play calming music
+  showNotification('সঙ্গীত বাজছে', 'শান্তিদায়ক সঙ্গীত বাজছে...');
+}
+
+function showGroundingTechnique() {
+  // In a real app, this would show the 5-4-3-2-1 grounding technique
+  showNotification('গ্রাউন্ডিং টেকনিক', '৫-৪-৩-২-১ গ্রাউন্ডিং টেকনিক দেখানো হচ্ছে...');
+}
+
+function startWalkingExercise() {
+  // In a real app, this would start a walking exercise timer
+  showNotification('হাঁটা শুরু হচ্ছে', '১০ মিনিটের হাঁটা শুরু হচ্ছে...');
+}
+
+function showMuscleRelaxation() {
+  // In a real app, this would show progressive muscle relaxation technique
+  showNotification('মাসল রিল্যাক্সেশন', 'প্রোগ্রেসিভ মাসল রিল্যাক্সেশন টেকনিক দেখানো হচ্ছে...');
+}
+
+// Achievements functionality
+function loadAchievements() {
+  const achievementsContainer = document.getElementById('achievements-list');
+  
+  // Clear existing achievements
+  achievementsContainer.innerHTML = '';
+  
+  // Load achievements from local storage
+  if (currentUser && currentUser.data.achievements) {
+    currentUser.data.achievements.forEach(achievement => {
+      const achievementElement = document.createElement('div');
+      achievementElement.className = 'achievement';
+      
+      achievementElement.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-info">
+          <div class="achievement-name">${achievement.name}</div>
+          <div class="achievement-description">${achievement.description}</div>
+          <div class="achievement-progress">
+            <div class="achievement-progress-bar" style="width: ${(achievement.progress / achievement.maxProgress) * 100}%;"></div>
+          </div>
+        </div>
+      `;
+      
+      achievementsContainer.appendChild(achievementElement);
+    });
+  }
+}
+
+// Profile functionality
+function editProfile() {
+  // In a real app, this would open a profile edit form
+  showNotification('প্রোফাইল সম্পাদনা', 'প্রোফাইল সম্পাদনা ফর্ম খোলা হচ্ছে...');
+}
+
+// Settings functionality
+function toggleSwitch(element) {
+  element.classList.toggle('active');
+}
+
+function saveSettings() {
+  // Get settings values
+  const language = document.getElementById('language-setting').value;
+  const theme = document.getElementById('theme-setting').value;
+  const timezone = document.getElementById('timezone-setting').value;
+  
+  // Update user settings
+  currentUser.settings.language = language;
+  currentUser.settings.theme = theme;
+  currentUser.settings.timezone = timezone;
+  
+  // Save to local storage
+  saveUserData();
+  
+  // Show notification
+  showNotification('সেটিংস সংরক্ষিত!', 'আপনার সেটিংস সফলভাবে সংরক্ষিত হয়েছে।');
+}
+
+function backupData() {
+  // Create a backup of user data
+  const backupData = JSON.stringify(currentUser);
+  
+  // Create a download link
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(backupData);
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "shifa_backup.json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+  
+  showNotification('ডেটা ব্যাকআপ সম্পন্ন!', 'আপনার ডেটা সফলভাবে ব্যাকআপ করা হয়েছে।');
+}
+
+function restoreData() {
+  // In a real app, this would open a file picker to restore data
+  showNotification('ডেটা রিস্টোর', 'ডেটা রিস্টোর করার জন্য ফাইল নির্বাচন করুন।');
+}
+
+function clearCache() {
+  // Clear local storage
+  localStorage.clear();
+  
+  // Reinitialize local storage with default data
+  initializeLocalStorage();
+  
+  showNotification('ক্যাশ ক্লিয়ার করা হয়েছে!', 'অ্যাপ্লিকেশনের ক্যাশ সফলভাবে ক্লিয়ার করা হয়েছে।');
+}
+
+// About functionality
+// No additional functions needed
+
+// Contact functionality
+function sendContactMessage() {
+  const name = document.getElementById('contact-name').value;
+  const email = document.getElementById('contact-email').value;
+  const subject = document.getElementById('contact-subject').value;
+  const message = document.getElementById('contact-message').value;
+  
+  if (name.trim() === '' || email.trim() === '' || subject.trim() === '' || message.trim() === '') {
+    alert('অনুগ্রহ করে সব ক্ষেত্র পূরণ করুন');
+    return;
+  }
+  
+  // Show success message
+  showNotification('বার্তা পাঠানো হয়েছে!', 'আপনার বার্তা সফলভাবে পাঠানো হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।');
+  
+  // Clear form
+  document.getElementById('contact-name').value = '';
+  document.getElementById('contact-email').value = '';
+  document.getElementById('contact-subject').value = '';
+  document.getElementById('contact-message').value = '';
+}
+
+// FAQ functionality
+function toggleFAQ(element) {
+  const answer = element.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  
+  // Close all FAQs
+  document.querySelectorAll('.faq-answer').forEach(a => {
+    a.classList.remove('open');
+  });
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.classList.remove('open');
+  });
+  
+  // Open clicked FAQ if it was closed
+  if (!isOpen) {
+    answer.classList.add('open');
+    element.classList.add('open');
+  }
+}
+
+// Notification functionality
+function showNotifications() {
+  showNotification('নোটিফিকেশন', 'আপনার ৩টি নতুন নোটিফিকেশন আছে।');
+}
+
+function showNotification(title, content) {
+  const notification = document.getElementById('notification');
+  const notificationTitle = document.querySelector('.notification-title');
+  const notificationContent = document.getElementById('notification-content');
+  
+  notificationTitle.textContent = title;
+  notificationContent.textContent = content;
+  
+  notification.style.display = 'block';
+  
+  // Auto hide after 5 seconds
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 5000);
+}
+
+function closeNotification() {
+  document.getElementById('notification').style.display = 'none';
 }
 
 // Chatbot functionality
@@ -2193,7 +5571,7 @@ function generateBotResponse(message) {
   } else if (lowerMessage.includes('ধ্যান') || lowerMessage.includes('মেডিটেশন')) {
     return 'ধ্যান মানসিক স্বাস্থ্যের জন্য খুবই উপকারী। আপনি আমাদের ভয়েসকেয়ার বিভাগে বিভিন্ন ধরনের ধ্যান অডিও পাবেন।';
   } else if (lowerMessage.includes('সাহায্য') || lowerMessage.includes('হেল্প')) {
-    return 'আমি আপনাকে সাহায্য করতে পারি। আপনি কি ধরনের সাহায্য চান? আপনি আমাদের বিভিন্ন বিভাগ যেমন মনের পরীক্ষা, রোগরাডার, চুপলাইন ইত্যাদি ব্যবহার করতে পারেন।';
+    return 'আমি আপনাকে সাহায্য করতে পারি। আপনি কি ধরনের সাহায্য চান? আপনি আমাদের বিভিন্ন বিভাগ যেমন মনের পরীক্ষা, রোগরাডার, চুপলাইন ইত্যাদি ব্যবহার করতে পারেন বা আমাকে আরও নির্দিষ্ট প্রশ্ন জিজ্ঞাসা করতে পারেন।';
   } else if (lowerMessage.includes('ধন্যবাদ')) {
     return 'আপনাকে ধন্যবাদ! আর কিছু জানার থাকলে আমাকে জিজ্ঞাসা করুন।';
   } else {
